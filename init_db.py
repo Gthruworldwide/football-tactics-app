@@ -7,28 +7,26 @@ def init_db():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    # Players table
+    # Players table (from Understat scraper)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS players (
-            id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL,
-            age INTEGER,
-            nationality TEXT,
-            team_name TEXT,
+            understat_id INTEGER PRIMARY KEY,
+            league TEXT NOT NULL,
+            season INTEGER NOT NULL,
+            player_name TEXT NOT NULL,
+            team_name TEXT NOT NULL,
             position TEXT,
-            games_rating REAL,
-            games_appearances INTEGER,
-            games_minutes INTEGER,
-            goals_total INTEGER,
-            goals_assists INTEGER,
-            passes_total INTEGER,
-            passes_key INTEGER,
-            passes_accuracy REAL,
-            tackles_total INTEGER,
-            tackles_blocks INTEGER,
-            duels_total INTEGER,
-            duels_won INTEGER,
-            updated_at TEXT DEFAULT (datetime('now'))
+            games INTEGER DEFAULT 0,
+            minutes INTEGER DEFAULT 0,
+            goals INTEGER DEFAULT 0,
+            assists INTEGER DEFAULT 0,
+            xg REAL DEFAULT 0.0,
+            xa REAL DEFAULT 0.0,
+            xg_chain REAL DEFAULT 0.0,
+            xg_buildup REAL DEFAULT 0.0,
+            shots INTEGER DEFAULT 0,
+            key_passes INTEGER DEFAULT 0,
+            updated_at TEXT
         )
     """)
 
