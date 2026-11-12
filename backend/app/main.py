@@ -17,6 +17,7 @@ from app.services.scrapling_pipeline import ScraplingPipeline
 from app.services.api_football import APIFootballService
 from app.geolocation import detect_country
 from app.routes import router as players_router
+from app.sync_router import router as sync_router
 
 # Initialize Redis
 @lru_cache()
@@ -33,6 +34,9 @@ app = FastAPI(
 
 # Include player routes
 app.include_router(players_router)
+
+# Include sync routes
+app.include_router(sync_router)
 
 # CORS middleware
 app.add_middleware(
