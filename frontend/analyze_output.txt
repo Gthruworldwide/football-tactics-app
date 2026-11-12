@@ -1,0 +1,78 @@
+Analyzing frontend...                                           
+
+warning - Unused import: '../logic/matches_bloc.dart'. Try removing the import directive - lib\data\cache.dart:5:8 - unused_import
+warning - Unused import: '../logic/tactical_bloc.dart'. Try removing the import directive - lib\data\cache.dart:6:8 - unused_import
+warning - The declaration '_matchBox' isn't referenced. Try removing the declaration of '_matchBox' - lib\data\cache.dart:9:7 - unused_element
+warning - The declaration '_standingsBox' isn't referenced. Try removing the declaration of '_standingsBox' - lib\data\cache.dart:10:7 - unused_element
+warning - The declaration '_userPreferencesBox' isn't referenced. Try removing the declaration of '_userPreferencesBox' - lib\data\cache.dart:11:7 - unused_element
+  error - Instance member 'fromMap' can't be accessed using static access - lib\data\cache.dart:109:37 - static_access_to_instance_member
+warning - Unused import: 'dart:async'. Try removing the import directive - lib\logic\country_bloc.dart:1:8 - unused_import
+   info - The imported package 'bloc' isn't a dependency of the importing package. Try adding a dependency for 'bloc' in the 'pubspec.yaml' file - lib\logic\country_bloc.dart:2:8 - depend_on_referenced_packages
+warning - Unused import: 'package:bloc/bloc.dart'. Try removing the import directive - lib\logic\country_bloc.dart:2:8 - unused_import
+warning - Unused import: '../core/constants.dart'. Try removing the import directive - lib\logic\country_bloc.dart:5:8 - unused_import
+   info - Unnecessary constructor invocation. Try using a collection literal - lib\logic\country_bloc.dart:26:7 - prefer_collection_literals
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\country_bloc.dart:50:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\country_bloc.dart:56:3 - prefer_const_constructors_in_immutables
+warning - Unused import: 'dart:async'. Try removing the import directive - lib\logic\matches_bloc.dart:1:8 - unused_import
+   info - The imported package 'bloc' isn't a dependency of the importing package. Try adding a dependency for 'bloc' in the 'pubspec.yaml' file - lib\logic\matches_bloc.dart:2:8 - depend_on_referenced_packages
+warning - Unused import: 'package:bloc/bloc.dart'. Try removing the import directive - lib\logic\matches_bloc.dart:2:8 - unused_import
+warning - Unused import: '../core/constants.dart'. Try removing the import directive - lib\logic\matches_bloc.dart:5:8 - unused_import
+warning - The receiver can't be null, so the null-aware operator '?...' is unnecessary. Try replacing the operator '?...' with '...' - lib\logic\matches_bloc.dart:178:16 - invalid_null_aware_operator
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:182:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:186:3 - prefer_const_constructors_in_immutables
+   info - Field overrides a field inherited from 'MatchesState'. Try removing the field, overriding the getter and setter if necessary - lib\logic\matches_bloc.dart:191:26 - overridden_fields
+   info - The member 'matches' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\logic\matches_bloc.dart:191:26 - annotate_overrides
+   info - Field overrides a field inherited from 'MatchesState'. Try removing the field, overriding the getter and setter if necessary - lib\logic\matches_bloc.dart:192:14 - overridden_fields
+   info - The member 'hasReachedMax' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\logic\matches_bloc.dart:192:14 - annotate_overrides
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:194:3 - prefer_const_constructors_in_immutables
+   info - Parameter 'selectedMatchId' could be a super parameter. Trying converting 'selectedMatchId' to a super parameter - lib\logic\matches_bloc.dart:194:3 - use_super_parameters
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:206:3 - prefer_const_constructors_in_immutables
+   info - Parameter 'selectedMatchId' could be a super parameter. Trying converting 'selectedMatchId' to a super parameter - lib\logic\matches_bloc.dart:206:3 - use_super_parameters
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:226:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:232:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:244:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:250:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:256:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:262:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:268:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:274:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:283:3 - prefer_const_constructors_in_immutables
+warning - Unused import: 'dart:async'. Try removing the import directive - lib\logic\tactical_bloc.dart:1:8 - unused_import
+   info - The imported package 'bloc' isn't a dependency of the importing package. Try adding a dependency for 'bloc' in the 'pubspec.yaml' file - lib\logic\tactical_bloc.dart:2:8 - depend_on_referenced_packages
+warning - Unused import: 'package:bloc/bloc.dart'. Try removing the import directive - lib\logic\tactical_bloc.dart:2:8 - unused_import
+warning - Unused import: '../core/constants.dart'. Try removing the import directive - lib\logic\tactical_bloc.dart:5:8 - unused_import
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:163:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:167:3 - prefer_const_constructors_in_immutables
+   info - Field overrides a field inherited from 'TacticalState'. Try removing the field, overriding the getter and setter if necessary - lib\logic\tactical_bloc.dart:171:23 - overridden_fields
+   info - The member 'tacticalCache' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\logic\tactical_bloc.dart:171:23 - annotate_overrides
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:173:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:179:3 - prefer_const_constructors_in_immutables
+   info - Parameter 'selectedMatchId' could be a super parameter. Trying converting 'selectedMatchId' to a super parameter - lib\logic\tactical_bloc.dart:179:3 - use_super_parameters
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:196:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:212:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:229:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:238:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:247:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:255:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:264:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:275:3 - prefer_const_constructors_in_immutables
+warning - Unused import: 'logic/country_bloc.dart'. Try removing the import directive - lib\main.dart:7:8 - unused_import
+warning - Unused import: 'presentation/match_card.dart'. Try removing the import directive - lib\main.dart:10:8 - unused_import
+warning - The member 'HydratedStorage' can only be used within 'package:hydrated_bloc/src/hydrated_storage.dart' or a test - lib\main.dart:26:26 - invalid_use_of_visible_for_testing_member
+warning - The declaration '_MatchCardsArea' isn't referenced. Try removing the declaration of '_MatchCardsArea' - lib\main.dart:78:7 - unused_element
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\main.dart:79:3 - prefer_const_constructors_in_immutables
+warning - A value for optional parameter 'key' isn't ever given. Try removing the unused parameter - lib\main.dart:79:26 - unused_element_parameter
+warning - A value for optional parameter 'key' isn't ever given. Try removing the unused parameter - lib\presentation\league_filter_chips.dart:52:11 - unused_element_parameter
+warning - The value of the local variable 'colors' isn't used. Try removing the variable or using it - lib\presentation\league_filter_chips.dart:57:11 - unused_local_variable
+warning - Unused import: 'package:flutter_bloc/flutter_bloc.dart'. Try removing the import directive - lib\presentation\match_card.dart:2:8 - unused_import
+warning - Unused import: '../logic/country_bloc.dart'. Try removing the import directive - lib\presentation\match_card.dart:4:8 - unused_import
+warning - Unused import: '../logic/tactical_bloc.dart'. Try removing the import directive - lib\presentation\match_card.dart:5:8 - unused_import
+warning - Unused import: '../logic/user_preferences.dart'. Try removing the import directive - lib\presentation\match_card.dart:6:8 - unused_import
+warning - Unused import: 'package:hive/hive.dart'. Try removing the import directive - lib\presentation\match_card.dart:9:8 - unused_import
+warning - The value of the field '_colorAnimation' isn't used. Try removing the field, or using it - lib\presentation\match_card.dart:32:26 - unused_field
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\match_card.dart:116:70 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\match_card.dart:189:72 - deprecated_member_use
+   info - The imported package 'frontend' isn't a dependency of the importing package. Try adding a dependency for 'frontend' in the 'pubspec.yaml' file - test\widget_test.dart:11:8 - depend_on_referenced_packages
+  error - Target of URI doesn't exist: 'package:frontend/main.dart'. Try creating the file referenced by the URI, or try using a URI for a file that does exist - test\widget_test.dart:11:8 - uri_does_not_exist
+  error - The name 'MyApp' isn't a class. Try correcting the name to match an existing class - test\widget_test.dart:16:35 - creation_with_non_type
+

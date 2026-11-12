@@ -1,0 +1,12 @@
+﻿.env
+.env.*
+*.pem
+*.key
+*.cert
+.git
+.gitignore
+frontend/
+__pycache__/
+*.pyc
+.vscode/
+.idea/

@@ -1,0 +1,2 @@
+INFO:     172.18.0.1:55974 - "GET /health HTTP/1.1" 200 OK
+INFO:     172.18.0.1:55974 - "GET /v1/models HTTP/1.1" 404 Not Found

@@ -1,0 +1,133 @@
+Analyzing frontend...                                           
+
+warning - Unused import: '../logic/user_preferences.dart'. Try removing the import directive - lib\data\cache.dart:4:8 - unused_import
+warning - The declaration '_matchBox' isn't referenced. Try removing the declaration of '_matchBox' - lib\data\cache.dart:7:7 - unused_element
+warning - Unused import: 'dart:developer'. Try removing the import directive - lib\logic\country_bloc.dart:1:8 - unused_import
+   info - The imported package 'bloc' isn't a dependency of the importing package. Try adding a dependency for 'bloc' in the 'pubspec.yaml' file - lib\logic\country_bloc.dart:2:8 - depend_on_referenced_packages
+warning - Unused import: 'package:bloc/bloc.dart'. Try removing the import directive - lib\logic\country_bloc.dart:2:8 - unused_import
+warning - Unused import: '../core/constants.dart'. Try removing the import directive - lib\logic\country_bloc.dart:5:8 - unused_import
+   info - Unnecessary constructor invocation. Try using a collection literal - lib\logic\country_bloc.dart:26:7 - prefer_collection_literals
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\country_bloc.dart:48:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\country_bloc.dart:54:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\country_bloc.dart:60:3 - prefer_const_constructors_in_immutables
+warning - Unused import: 'dart:async'. Try removing the import directive - lib\logic\matches_bloc.dart:1:8 - unused_import
+   info - The imported package 'bloc' isn't a dependency of the importing package. Try adding a dependency for 'bloc' in the 'pubspec.yaml' file - lib\logic\matches_bloc.dart:2:8 - depend_on_referenced_packages
+warning - Unused import: 'package:bloc/bloc.dart'. Try removing the import directive - lib\logic\matches_bloc.dart:2:8 - unused_import
+warning - Unused import: '../core/constants.dart'. Try removing the import directive - lib\logic\matches_bloc.dart:5:8 - unused_import
+warning - The receiver can't be null, so the null-aware operator '?...' is unnecessary. Try replacing the operator '?...' with '...' - lib\logic\matches_bloc.dart:179:5 - invalid_null_aware_operator
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:187:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:191:3 - prefer_const_constructors_in_immutables
+   info - Field overrides a field inherited from 'MatchesState'. Try removing the field, overriding the getter and setter if necessary - lib\logic\matches_bloc.dart:196:26 - overridden_fields
+   info - The member 'matches' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\logic\matches_bloc.dart:196:26 - annotate_overrides
+   info - Field overrides a field inherited from 'MatchesState'. Try removing the field, overriding the getter and setter if necessary - lib\logic\matches_bloc.dart:197:14 - overridden_fields
+   info - The member 'hasReachedMax' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\logic\matches_bloc.dart:197:14 - annotate_overrides
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:199:3 - prefer_const_constructors_in_immutables
+   info - Parameter 'selectedMatchId' could be a super parameter. Trying converting 'selectedMatchId' to a super parameter - lib\logic\matches_bloc.dart:199:3 - use_super_parameters
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:211:3 - prefer_const_constructors_in_immutables
+   info - Parameter 'selectedMatchId' could be a super parameter. Trying converting 'selectedMatchId' to a super parameter - lib\logic\matches_bloc.dart:211:3 - use_super_parameters
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:229:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:234:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:243:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:248:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:253:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:258:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:263:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:268:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\matches_bloc.dart:275:3 - prefer_const_constructors_in_immutables
+warning - Unused import: 'dart:developer'. Try removing the import directive - lib\logic\tactical_bloc.dart:1:8 - unused_import
+warning - Unused import: 'dart:async'. Try removing the import directive - lib\logic\tactical_bloc.dart:2:8 - unused_import
+   info - The imported package 'bloc' isn't a dependency of the importing package. Try adding a dependency for 'bloc' in the 'pubspec.yaml' file - lib\logic\tactical_bloc.dart:3:8 - depend_on_referenced_packages
+warning - Unused import: 'package:bloc/bloc.dart'. Try removing the import directive - lib\logic\tactical_bloc.dart:3:8 - unused_import
+warning - Unused import: '../core/constants.dart'. Try removing the import directive - lib\logic\tactical_bloc.dart:6:8 - unused_import
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:164:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:168:3 - prefer_const_constructors_in_immutables
+   info - Field overrides a field inherited from 'TacticalState'. Try removing the field, overriding the getter and setter if necessary - lib\logic\tactical_bloc.dart:172:23 - overridden_fields
+   info - The member 'tacticalCache' overrides an inherited member but isn't annotated with '@override'. Try adding the '@override' annotation - lib\logic\tactical_bloc.dart:172:23 - annotate_overrides
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:174:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:180:3 - prefer_const_constructors_in_immutables
+   info - Parameter 'selectedMatchId' could be a super parameter. Trying converting 'selectedMatchId' to a super parameter - lib\logic\tactical_bloc.dart:180:3 - use_super_parameters
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:196:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:211:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:227:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:235:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:243:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:250:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:258:3 - prefer_const_constructors_in_immutables
+   info - Constructors in '@immutable' classes should be declared as 'const'. Try adding 'const' to the constructor declaration - lib\logic\tactical_bloc.dart:268:3 - prefer_const_constructors_in_immutables
+warning - Unused import: 'logic/country_bloc.dart'. Try removing the import directive - lib\main.dart:8:8 - unused_import
+warning - Unused import: 'presentation/match_card.dart'. Try removing the import directive - lib\main.dart:11:8 - unused_import
+warning - The member 'HydratedStorage' can only be used within 'package:hydrated_bloc/src/hydrated_storage.dart' or a test - lib\main.dart:29:26 - invalid_use_of_visible_for_testing_member
+  error - The named parameter 'dateRange' is required, but there's no corresponding argument. Try adding the required argument - lib\main.dart:66:13 - missing_required_argument
+  error - The named parameter 'onDateSelected' is required, but there's no corresponding argument. Try adding the required argument - lib\main.dart:66:13 - missing_required_argument
+  error - The named parameter 'selectedDate' is required, but there's no corresponding argument. Try adding the required argument - lib\main.dart:66:13 - missing_required_argument
+  error - The named parameter 'onCountrySelected' is required, but there's no corresponding argument. Try adding the required argument - lib\main.dart:69:13 - missing_required_argument
+  error - Undefined class 'TacticalBloc'. Try changing the name to the name of an existing class, or creating a class with the name 'TacticalBloc' - lib\presentation\ai_bottom_sheet.dart:20:8 - undefined_class
+warning - The value of the field '_aiSummary' isn't used. Try removing the field, or using it - lib\presentation\ai_bottom_sheet.dart:23:10 - unused_field
+  error - The name 'TacticalBloc' isn't a type, so it can't be used as a type argument. Try correcting the name to an existing type, or defining a type named 'TacticalBloc' - lib\presentation\ai_bottom_sheet.dart:28:34 - non_type_as_type_argument
+  error - The name 'TacticalBloc' isn't a type, so it can't be used as a type argument. Try correcting the name to an existing type, or defining a type named 'TacticalBloc' - lib\presentation\ai_bottom_sheet.dart:56:40 - non_type_as_type_argument
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\ai_bottom_sheet.dart:68:50 - deprecated_member_use
+  error - The argument type 'ThemeData' can't be assigned to the parameter type 'Theme'.  - lib\presentation\ai_bottom_sheet.dart:109:44 - argument_type_not_assignable
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\ai_bottom_sheet.dart:144:62 - deprecated_member_use
+  error - Undefined class 'TacticalBloc'. Try changing the name to the name of an existing class, or creating a class with the name 'TacticalBloc' - lib\presentation\ai_bottom_sheet.dart:179:39 - undefined_class
+  error - The getter 'colorScheme' isn't defined for the type 'Theme'. Try importing the library that defines 'colorScheme', correcting the name to the name of an existing getter, or defining a getter or field named 'colorScheme' - lib\presentation\ai_bottom_sheet.dart:181:20 - undefined_getter
+  error - The getter 'colorScheme' isn't defined for the type 'Theme'. Try importing the library that defines 'colorScheme', correcting the name to the name of an existing getter, or defining a getter or field named 'colorScheme' - lib\presentation\ai_bottom_sheet.dart:189:40 - undefined_getter
+  error - The getter 'colorScheme' isn't defined for the type 'Theme'. Try importing the library that defines 'colorScheme', correcting the name to the name of an existing getter, or defining a getter or field named 'colorScheme' - lib\presentation\ai_bottom_sheet.dart:190:47 - undefined_getter
+  error - The getter 'colorScheme' isn't defined for the type 'Theme'. Try importing the library that defines 'colorScheme', correcting the name to the name of an existing getter, or defining a getter or field named 'colorScheme' - lib\presentation\ai_bottom_sheet.dart:207:40 - undefined_getter
+  error - The getter 'colorScheme' isn't defined for the type 'Theme'. Try importing the library that defines 'colorScheme', correcting the name to the name of an existing getter, or defining a getter or field named 'colorScheme' - lib\presentation\ai_bottom_sheet.dart:208:40 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\date_bar.dart:79:33 - deprecated_member_use
+  error - The named parameter 'blur' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'blur' - lib\presentation\date_bar.dart:80:13 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\date_bar.dart:106:74 - deprecated_member_use
+  error - Undefined name 'theme'. Try correcting the name to one that is defined, or defining the name - lib\presentation\date_bar.dart:168:29 - undefined_identifier
+  error - The named parameter 'color' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'color' - lib\presentation\date_bar.dart:171:11 - undefined_named_parameter
+  error - Undefined name 'theme'. Try correcting the name to one that is defined, or defining the name - lib\presentation\date_bar.dart:171:31 - undefined_identifier
+  error - Undefined name 'theme'. Try correcting the name to one that is defined, or defining the name - lib\presentation\date_bar.dart:176:16 - undefined_identifier
+  error - Undefined name 'theme'. Try correcting the name to one that is defined, or defining the name - lib\presentation\date_bar.dart:177:46 - undefined_identifier
+  error - The method 'watch' isn't defined for the type 'BuildContext'. Try correcting the name to the name of an existing method, or defining a method named 'watch' - lib\presentation\league_filter_chips.dart:25:34 - undefined_method
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\league_filter_chips.dart:34:33 - deprecated_member_use
+  error - The named parameter 'blur' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'blur' - lib\presentation\league_filter_chips.dart:35:13 - undefined_named_parameter
+warning - The value of the local variable 'allCountries' isn't used. Try removing the variable or using it - lib\presentation\league_filter_chips.dart:47:11 - unused_local_variable
+warning - The value of the local variable 'permanentCountries' isn't used. Try removing the variable or using it - lib\presentation\league_filter_chips.dart:48:11 - unused_local_variable
+warning - A value for optional parameter 'key' isn't ever given. Try removing the unused parameter - lib\presentation\league_filter_chips.dart:103:11 - unused_element_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\league_filter_chips.dart:135:39 - deprecated_member_use
+  error - The named parameter 'disabledSelectedColor' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'disabledSelectedColor' - lib\presentation\league_filter_chips.dart:136:9 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\league_filter_chips.dart:136:47 - deprecated_member_use
+warning - Unused import: 'package:flutter_bloc/flutter_bloc.dart'. Try removing the import directive - lib\presentation\match_card.dart:2:8 - unused_import
+warning - Unused import: '../logic/country_bloc.dart'. Try removing the import directive - lib\presentation\match_card.dart:4:8 - unused_import
+warning - Unused import: '../logic/tactical_bloc.dart'. Try removing the import directive - lib\presentation\match_card.dart:5:8 - unused_import
+warning - The value of the field '_colorAnimation' isn't used. Try removing the field, or using it - lib\presentation\match_card.dart:30:26 - unused_field
+warning - The value of the field '_pulseColorTween' isn't used. Try removing the field, or using it - lib\presentation\match_card.dart:32:19 - unused_field
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\match_card.dart:46:23 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\match_card.dart:154:55 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\match_card.dart:227:72 - deprecated_member_use
+warning - Unused import: '../logic/country_bloc.dart'. Try removing the import directive - lib\presentation\soa_score_nav_bar.dart:2:8 - unused_import
+  error - The method 'DateBar' isn't defined for the type 'MatchHeader'. Try correcting the name to the name of an existing method, or defining a method named 'DateBar' - lib\presentation\soa_score_nav_bar.dart:30:11 - undefined_method
+  error - The method 'LeagueFilterChips' isn't defined for the type 'MatchHeader'. Try correcting the name to the name of an existing method, or defining a method named 'LeagueFilterChips' - lib\presentation\soa_score_nav_bar.dart:40:20 - undefined_method
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\soa_score_nav_bar.dart:77:33 - deprecated_member_use
+  error - The named parameter 'blur' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'blur' - lib\presentation\soa_score_nav_bar.dart:78:13 - undefined_named_parameter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\soa_score_nav_bar.dart:92:60 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\tactical_bottom_sheet.dart:32:50 - deprecated_member_use
+warning - The '!' will have no effect because the receiver can't be null. Try removing the '!' operator - lib\presentation\tactical_bottom_sheet.dart:90:55 - unnecessary_non_null_assertion
+  error - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name - lib\presentation\tactical_bottom_sheet.dart:110:31 - undefined_identifier
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\tactical_bottom_sheet.dart:110:62 - deprecated_member_use
+  error - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name - lib\presentation\tactical_bottom_sheet.dart:115:31 - undefined_identifier
+  error - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name - lib\presentation\tactical_bottom_sheet.dart:116:33 - undefined_identifier
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\tactical_bottom_sheet.dart:116:64 - deprecated_member_use
+  error - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name - lib\presentation\tactical_bottom_sheet.dart:149:31 - undefined_identifier
+  error - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name - lib\presentation\tactical_bottom_sheet.dart:156:31 - undefined_identifier
+  error - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name - lib\presentation\tactical_bottom_sheet.dart:168:28 - undefined_identifier
+  error - The getter 'homeTeam' isn't defined for the type 'TacticalCache'. Try importing the library that defines 'homeTeam', correcting the name to the name of an existing getter, or defining a getter or field named 'homeTeam' - lib\presentation\tactical_bottom_sheet.dart:185:28 - undefined_getter
+  error - The getter 'awayTeam' isn't defined for the type 'TacticalCache'. Try importing the library that defines 'awayTeam', correcting the name to the name of an existing getter, or defining a getter or field named 'awayTeam' - lib\presentation\tactical_bottom_sheet.dart:185:49 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\tactical_bottom_sheet.dart:196:37 - deprecated_member_use
+  error - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name - lib\presentation\tactical_bottom_sheet.dart:214:22 - undefined_identifier
+warning - The receiver can't be null, so the null-aware operator '?.' is unnecessary. Try replacing the operator '?.' with '.' - lib\presentation\tactical_bottom_sheet.dart:217:35 - invalid_null_aware_operator
+warning - The receiver can't be null, so the null-aware operator '?.' is unnecessary. Try replacing the operator '?.' with '.' - lib\presentation\tactical_bottom_sheet.dart:217:73 - invalid_null_aware_operator
+  error - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name - lib\presentation\tactical_bottom_sheet.dart:225:22 - undefined_identifier
+  error - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name - lib\presentation\tactical_bottom_sheet.dart:236:22 - undefined_identifier
+  error - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name - lib\presentation\tactical_bottom_sheet.dart:247:22 - undefined_identifier
+  error - The getter 'momentum' isn't defined for the type 'Icons'. Try importing the library that defines 'momentum', correcting the name to the name of an existing getter, or defining a getter or field named 'momentum' - lib\presentation\tactical_bottom_sheet.dart:248:25 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\tactical_bottom_sheet.dart:287:56 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement - lib\presentation\tactical_bottom_sheet.dart:306:50 - deprecated_member_use
+   info - The imported package 'frontend' isn't a dependency of the importing package. Try adding a dependency for 'frontend' in the 'pubspec.yaml' file - test\widget_test.dart:11:8 - depend_on_referenced_packages
+  error - Target of URI doesn't exist: 'package:frontend/main.dart'. Try creating the file referenced by the URI, or try using a URI for a file that does exist - test\widget_test.dart:11:8 - uri_does_not_exist
+  error - The name 'MyApp' isn't a class. Try correcting the name to match an existing class - test\widget_test.dart:16:35 - creation_with_non_type
+

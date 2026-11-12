@@ -1,0 +1,33 @@
+# Environment
+.env
+.env.local
+
+# Build artifacts
+build/
+*.apk
+*.aab
+
+# Flutter
+frontend/build/
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/pubspec.lock
+
+# Backend
+backend/__pycache__/
+backend/.pytest_cache/
+*.pyc
+
+# Logs
+*.log
+tunnel_logs.txt
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+Thumbs.db
+.DS_Store
