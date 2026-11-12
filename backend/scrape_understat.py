@@ -3,7 +3,7 @@ import re
 import sqlite3
 import codecs
 from datetime import datetime
-from scrapling.fetchers import Fetcher
+from scrapling.fetchers import StealthyFetcher
 
 DB_PATH = r"D:\football-tactics-app\tactics_analytics.db"
 
@@ -175,11 +175,13 @@ def rebuild_league_standings(conn: sqlite3.Connection, league_name: str, season:
 
 def scrape_league_data(league_slug: str, league_name: str, season: int = 2026):
     url = f"https://understat.com/league/{league_slug}/{season}"
-    print(f"[*] جاري سحب بيانات {league_name} ({season}) من: {url}")
+    print(f"[*] جاري تحميل وتشغيل متصفح خفي لـ {league_name} ({season}) من: {url}")
 
-    page = Fetcher.get(url, stealthy_headers=True, timeout=30)
-    if page.status != 200:
-        print(f"[!] فشل الاتصال بـ {league_name} (HTTP {page.status})")
+    try:
+        # استخدام StealthyFetcher لتمكين تشغيل JS بالكامل
+        page = StealthyFetcher.fetch(url, headless=True, timeout=45)
+    except Exception as e:
+        print(f"[!] فشل الاتصال المتصفح بـ {league_name}: {e}")
         return
 
     conn = sqlite3.connect(DB_PATH)
@@ -284,4 +286,4 @@ if __name__ == "__main__":
             scrape_league_data(slug, name, season=2026)
         except Exception as e:
             print(f"[!] خطأ عام في {name}: {e}")
-    print("\n[✓] اكتملت عملية السحب والتحديث الشامل لجميع الدوريات بنجاح.")
+    print("\n[✓] اكتملت عملية السحب والتحديث الشامل لجميع الدوريات عبر المتصفح بنجاح.")

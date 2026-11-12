@@ -22,10 +22,8 @@
     "tactics-db": {
       "type": "local",
       "command": [
-        "uvx",
-        "mcp-server-sqlite",
-        "--db-path",
-        "D:\\football-tactics-app\\tactics_analytics.db"
+        "D:\\football-tactics-app\\.venv_mcp\\Scripts\\python.exe",
+        "D:\\football-tactics-app\\backend\\sqlite_mcp.py"
       ],
       "enabled": true
     }

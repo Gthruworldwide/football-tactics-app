@@ -12,6 +12,7 @@ import '../core/theme/app_theme.dart';
 import 'player_search_screen.dart';
 import 'settings_screen.dart';
 import 'standings_view.dart';
+import 'xg_analytics_screen.dart';
 import 'widgets/tactical_match_card.dart';
 
 class MatchesScreen extends StatefulWidget {
@@ -179,6 +180,21 @@ class _MatchesScreenState extends State<MatchesScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.analytics_rounded, color: Color(0xFF38BDF8)),
+            tooltip: 'xG Analytics',
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const XgAnalyticsScreen(
+                    serverHost: '192.168.1.14:8000',
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.person_search_rounded, color: AppTheme.accentCyan),
             tooltip: 'Scouting Database',
