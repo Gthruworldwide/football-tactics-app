@@ -1,19 +1,33 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "servers": {
-      "filesystem": {
-        "type": "local",
-        "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "D:\\football-tactics-app"]
-      },
-      "fetch": {
-        "type": "local",
-        "command": ["uvx", "mcp-server-fetch"]
-      },
-      "tactics-db": {
-        "type": "local",
-        "command": ["uvx", "mcp-server-sqlite", "--db-path", "D:\\football-tactics-app\\tactics_analytics.db"]
-      }
+    "filesystem": {
+      "type": "local",
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "D:\\football-tactics-app"
+      ],
+      "enabled": true
+    },
+    "fetch": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "mcp-server-fetch"
+      ],
+      "enabled": true
+    },
+    "tactics-db": {
+      "type": "local",
+      "command": [
+        "uvx",
+        "mcp-server-sqlite",
+        "--db-path",
+        "D:\\football-tactics-app\\tactics_analytics.db"
+      ],
+      "enabled": true
     }
   }
 }
