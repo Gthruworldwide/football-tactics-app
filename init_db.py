@@ -55,19 +55,27 @@ def init_db():
         )
     """)
 
-    # Standings table
+    # Standings table (enhanced with xG and form)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS standings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            league TEXT,
-            rank INTEGER,
-            team TEXT,
-            played INTEGER,
-            gd TEXT,
-            pts INTEGER,
-            form TEXT,
-            updated_at TEXT DEFAULT (datetime('now')),
-            UNIQUE(league, team)
+            league TEXT NOT NULL,
+            season INTEGER NOT NULL,
+            rank INTEGER NOT NULL,
+            team_name TEXT NOT NULL,
+            played INTEGER DEFAULT 0,
+            won INTEGER DEFAULT 0,
+            drawn INTEGER DEFAULT 0,
+            lost INTEGER DEFAULT 0,
+            goals_for INTEGER DEFAULT 0,
+            goals_against INTEGER DEFAULT 0,
+            goal_diff INTEGER DEFAULT 0,
+            xg_for REAL DEFAULT 0.0,
+            xg_against REAL DEFAULT 0.0,
+            points INTEGER DEFAULT 0,
+            form TEXT DEFAULT '',
+            updated_at TEXT,
+            UNIQUE(league, season, team_name)
         )
     """)
 
@@ -89,13 +97,21 @@ def init_db():
     # Match xG table (from Understat scraper)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS match_xg (
-            match_id TEXT PRIMARY KEY,
-            league TEXT,
-            home_team TEXT,
-            away_team TEXT,
+            understat_id INTEGER PRIMARY KEY,
+            league TEXT NOT NULL,
+            season INTEGER NOT NULL,
+            match_date TEXT,
+            home_team TEXT NOT NULL,
+            away_team TEXT NOT NULL,
+            home_goals INTEGER,
+            away_goals INTEGER,
             home_xg REAL,
             away_xg REAL,
-            match_date TEXT
+            forecast_win REAL,
+            forecast_draw REAL,
+            forecast_loss REAL,
+            is_result INTEGER DEFAULT 1,
+            updated_at TEXT
         )
     """)
 
