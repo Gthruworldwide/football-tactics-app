@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Optional
 from database import get_connection, init_db
@@ -73,6 +73,22 @@ class SyncPayload(BaseModel):
     matches: List[MatchItem] = []
     standings: List[StandingItem] = []
     weather: List[WeatherCacheItem] = []
+
+@router.get("/xg")
+def get_matches_xg(league: Optional[str] = None, limit: int = Query(25, le=100)):
+    conn = get_connection()
+    if league:
+        rows = conn.execute(
+            "SELECT * FROM match_xg WHERE league = ? ORDER BY match_date DESC LIMIT ?",
+            (league, limit)
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT * FROM match_xg ORDER BY match_date DESC LIMIT ?",
+            (limit,)
+        ).fetchall()
+    conn.close()
+    return {"matches_xg": [dict(r) for r in rows]}
 
 # --- نقطة نهاية المزامنة ---
 @router.post("/all")
@@ -180,3 +196,4 @@ def sync_tactics_data(payload: SyncPayload):
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         conn.close()
+
