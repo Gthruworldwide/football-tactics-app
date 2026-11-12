@@ -18,6 +18,7 @@ from app.services.api_football import APIFootballService
 from app.geolocation import detect_country
 from app.routes import router as players_router
 from app.sync_router import router as sync_router
+from app.read_router import router as read_router
 
 # Initialize Redis
 @lru_cache()
@@ -37,6 +38,9 @@ app.include_router(players_router)
 
 # Include sync routes
 app.include_router(sync_router)
+
+# Include read routes
+app.include_router(read_router)
 
 # CORS middleware
 app.add_middleware(
