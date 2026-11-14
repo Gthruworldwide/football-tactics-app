@@ -1,7 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+import '../core/data_error_localizer.dart';
+import '../core/data_source_label.dart';
+import '../core/league_catalog.dart';
+import '../core/services/app_language.dart';
+import 'widgets/language_menu_button.dart';
 
 /// نموذج بيانات الإحصائيات التكتيكية للاعب
 class PlayerTacticalModel {
@@ -10,16 +17,16 @@ class PlayerTacticalModel {
   final String teamName;
   final String league;
   final String position;
-  final int games;
-  final int minutes;
-  final int goals;
-  final int assists;
-  final double xg;
-  final double xa;
-  final double xgChain;
-  final double xgBuildup;
-  final int shots;
-  final int keyPasses;
+  final int? games;
+  final int? minutes;
+  final int? goals;
+  final int? assists;
+  final double? xg;
+  final double? xa;
+  final double? xgChain;
+  final double? xgBuildup;
+  final int? shots;
+  final int? keyPasses;
 
   PlayerTacticalModel({
     required this.understatId,
@@ -40,22 +47,27 @@ class PlayerTacticalModel {
   });
 
   factory PlayerTacticalModel.fromJson(Map<String, dynamic> json) {
+    int? asInt(Object? value) =>
+        value is num ? value.toInt() : int.tryParse(value?.toString() ?? '');
+    double? asDouble(Object? value) => value is num
+        ? value.toDouble()
+        : double.tryParse(value?.toString() ?? '');
     return PlayerTacticalModel(
-      understatId: (json['understat_id'] ?? json['id'] ?? 0) as int,
+      understatId: asInt(json['understat_id'] ?? json['id']) ?? 0,
       playerName: (json['player_name'] ?? json['name'] ?? '').toString(),
       teamName: (json['team_name'] ?? json['team'] ?? '').toString(),
       league: (json['league'] ?? '').toString(),
       position: (json['position'] ?? 'N/A').toString(),
-      games: (json['games'] ?? json['appearances'] ?? 0) as int,
-      minutes: (json['minutes'] ?? json['time'] ?? 0) as int,
-      goals: (json['goals'] ?? 0) as int,
-      assists: (json['assists'] ?? 0) as int,
-      xg: (json['xg'] ?? json['xG'] ?? 0.0).toDouble(),
-      xa: (json['xa'] ?? json['xA'] ?? 0.0).toDouble(),
-      xgChain: (json['xg_chain'] ?? json['xGChain'] ?? 0.0).toDouble(),
-      xgBuildup: (json['xg_buildup'] ?? json['xGBuildup'] ?? 0.0).toDouble(),
-      shots: (json['shots'] ?? 0) as int,
-      keyPasses: (json['key_passes'] ?? 0) as int,
+      games: asInt(json['games'] ?? json['appearances']),
+      minutes: asInt(json['minutes'] ?? json['time']),
+      goals: asInt(json['goals']),
+      assists: asInt(json['assists']),
+      xg: asDouble(json['xg'] ?? json['xG']),
+      xa: asDouble(json['xa'] ?? json['xA']),
+      xgChain: asDouble(json['xg_chain'] ?? json['xGChain']),
+      xgBuildup: asDouble(json['xg_buildup'] ?? json['xGBuildup']),
+      shots: asInt(json['shots']),
+      keyPasses: asInt(json['key_passes']),
     );
   }
 }
@@ -63,26 +75,18 @@ class PlayerTacticalModel {
 class PlayersScreen extends StatefulWidget {
   final String serverHost;
 
-  const PlayersScreen({
-    super.key,
-    this.serverHost = '192.168.1.5:8000',
-  });
+  const PlayersScreen({super.key, this.serverHost = '192.168.1.14:8000'});
 
   @override
   State<PlayersScreen> createState() => _PlayersScreenState();
 }
 
 class _PlayersScreenState extends State<PlayersScreen> {
-  final List<String> _leagues = const [
-    'All',
-    'La Liga',
-    'Premier League',
-    'Bundesliga',
-    'Serie A',
-    'Ligue 1',
-  ];
+  final _leagues = LeagueCatalog.supported;
 
-  String _selectedLeague = 'La Liga';
+  String _selectedLeague = 'ENG';
+  int? _season;
+  String? _source;
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
@@ -101,24 +105,37 @@ class _PlayersScreenState extends State<PlayersScreen> {
     super.dispose();
   }
 
-  Future<List<PlayerTacticalModel>> _fetchPlayers() async {
-    final Map<String, String> params = {'limit': '50'};
-    if (_selectedLeague != 'All') {
-      params['league'] = _selectedLeague;
-    }
-    if (_searchQuery.trim().isNotEmpty) {
-      params['search'] = _searchQuery.trim();
-    }
-
-    final uri = Uri.http(widget.serverHost, '/api/tactics/players', params);
-    final response = await http.get(uri).timeout(const Duration(seconds: 10));
+  Future<List<PlayerTacticalModel>> _fetchPlayers({String? league}) async {
+    final requestedLeague = league ?? _selectedLeague;
+    final uri = Uri.http(widget.serverHost, '/api/v1/players/$requestedLeague');
+    final response = await http.get(uri).timeout(const Duration(seconds: 40));
 
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      final season = decoded['season'];
+      final source = decoded['source'] as String?;
+      // Ignore late responses from a league the user has already left.
+      if (mounted && _selectedLeague == requestedLeague) {
+        setState(() {
+          _season = season is num ? season.toInt() : null;
+          _source = source;
+        });
+      }
       final List<dynamic> list = decoded['players'] ?? [];
-      return list.map((e) => PlayerTacticalModel.fromJson(e)).toList();
+      final query = _searchQuery.trim().toLowerCase();
+      return list
+          .map((e) => PlayerTacticalModel.fromJson(e as Map<String, dynamic>))
+          .where(
+            (player) =>
+                query.isEmpty ||
+                player.playerName.toLowerCase().contains(query) ||
+                player.teamName.toLowerCase().contains(query),
+          )
+          .toList();
     } else {
-      throw Exception('خطأ في السيرفر: ${response.statusCode}');
+      final decoded = jsonDecode(response.body);
+      final detail = decoded is Map ? decoded['detail'] : null;
+      throw Exception(detail ?? 'خطأ في السيرفر: ${response.statusCode}');
     }
   }
 
@@ -126,7 +143,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
     if (_selectedLeague == league) return;
     setState(() {
       _selectedLeague = league;
-      _playersFuture = _fetchPlayers();
+      _season = null;
+      _source = null;
+      _playersFuture = _fetchPlayers(league: league);
     });
   }
 
@@ -142,27 +161,62 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
   Future<void> _refresh() async {
     setState(() {
+      _season = null;
+      _source = null;
       _playersFuture = _fetchPlayers();
     });
-    await _playersFuture;
+    try {
+      await _playersFuture;
+    } catch (_) {
+      // FutureBuilder presents the localized error state.
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final sourceLabel = dataSourceLabel(
+      _source,
+      isArabic: AppLanguage.instance.isArabic,
+    );
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
-        title: const Text(
-          'التحليل التكتيكي للاعبين',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              AppLanguage.instance.isArabic
+                  ? 'إحصائيات اللاعبين'
+                  : 'Player Statistics',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            if (_season != null || sourceLabel != null)
+              Text(
+                [
+                  if (_season != null)
+                    AppLanguage.instance.isArabic
+                        ? 'موسم $_season/${_season! + 1}'
+                        : 'Season $_season/${_season! + 1}',
+                  ?sourceLabel,
+                ].join(' · '),
+                style: const TextStyle(color: Colors.white54, fontSize: 11),
+              ),
+          ],
         ),
         backgroundColor: const Color(0xFF1E293B),
         elevation: 0,
         actions: [
+          const LanguageMenuButton(),
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: _refresh,
-            tooltip: 'تحديث البيانات',
+            tooltip: AppLanguage.instance.isArabic
+                ? 'تحديث البيانات'
+                : 'Refresh data',
           ),
         ],
       ),
@@ -177,7 +231,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
               onChanged: _onSearchChanged,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'ابحث باسم اللاعب أو الفريق...',
+                hintText: AppLanguage.instance.isArabic
+                    ? 'ابحث باسم اللاعب أو الفريق...'
+                    : 'Search player or team...',
                 hintStyle: const TextStyle(color: Colors.white54, fontSize: 14),
                 prefixIcon: const Icon(Icons.search, color: Color(0xFF38BDF8)),
                 suffixIcon: _searchQuery.isNotEmpty
@@ -211,21 +267,22 @@ class _PlayersScreenState extends State<PlayersScreen> {
               itemCount: _leagues.length,
               separatorBuilder: (_, __) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
-                final league = _leagues[index];
-                final isSelected = league == _selectedLeague;
+                final option = _leagues[index];
+                final isSelected = option.code == _selectedLeague;
                 return ChoiceChip(
                   label: Text(
-                    league == 'All' ? 'الكل' : league,
+                    option.label(isArabic: AppLanguage.instance.isArabic),
                     style: TextStyle(
                       color: isSelected ? Colors.black : Colors.white70,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                   selected: isSelected,
                   selectedColor: const Color(0xFF38BDF8),
                   backgroundColor: const Color(0xFF334155),
-                  onSelected: (_) => _onLeagueChanged(league),
+                  onSelected: (_) => _onLeagueChanged(option.code),
                 );
               },
             ),
@@ -241,8 +298,9 @@ class _PlayersScreenState extends State<PlayersScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
-                      child:
-                          CircularProgressIndicator(color: Color(0xFF38BDF8)),
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF38BDF8),
+                      ),
                     );
                   }
 
@@ -253,11 +311,14 @@ class _PlayersScreenState extends State<PlayersScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.error_outline,
-                                color: Colors.redAccent, size: 46),
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.redAccent,
+                              size: 46,
+                            ),
                             const SizedBox(height: 10),
                             Text(
-                              'تعذر جلب بيانات اللاعبين\n${snapshot.error}',
+                              '${AppLanguage.instance.isArabic ? 'تعذر جلب بيانات اللاعبين' : 'Could not load player data'}\n${localizedDataError(snapshot.error!, isArabic: AppLanguage.instance.isArabic, fallback: AppLanguage.instance.isArabic ? 'تحقق من الاتصال بالخادم ثم أعد المحاولة.' : 'Check the backend connection and retry.')}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(color: Colors.white70),
                             ),
@@ -265,7 +326,11 @@ class _PlayersScreenState extends State<PlayersScreen> {
                             ElevatedButton.icon(
                               onPressed: _refresh,
                               icon: const Icon(Icons.refresh),
-                              label: const Text('إعادة المحاولة'),
+                              label: Text(
+                                AppLanguage.instance.isArabic
+                                    ? 'إعادة المحاولة'
+                                    : 'Retry',
+                              ),
                             ),
                           ],
                         ),
@@ -275,10 +340,15 @@ class _PlayersScreenState extends State<PlayersScreen> {
 
                   final players = snapshot.data ?? [];
                   if (players.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Text(
-                        'لا توجد إحصائيات لاعبين مطابقة للبحث.',
-                        style: TextStyle(color: Colors.white70, fontSize: 15),
+                        AppLanguage.instance.isArabic
+                            ? 'لا توجد إحصائيات لاعبين متاحة لهذا الدوري أو البحث.'
+                            : 'No player statistics match this league or search.',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 15,
+                        ),
                       ),
                     );
                   }
@@ -308,15 +378,29 @@ class _PlayerTacticalCard extends StatelessWidget {
   final int rank;
   final PlayerTacticalModel player;
 
-  const _PlayerTacticalCard({
-    required this.rank,
-    required this.player,
-  });
+  const _PlayerTacticalCard({required this.rank, required this.player});
+
+  String get _notAvailable =>
+      AppLanguage.instance.isArabic ? 'غير متاح' : 'N/A';
+
+  String get _positionLabel {
+    if (!AppLanguage.instance.isArabic) return player.position;
+    return const {
+          'Goalkeeper': 'حارس مرمى',
+          'Defender': 'مدافع',
+          'Midfielder': 'لاعب وسط',
+          'Attacker': 'مهاجم',
+          'Forward': 'مهاجم',
+        }[player.position] ??
+        player.position;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final double finishingDiff = player.goals - player.xg;
-    final bool clinical = finishingDiff >= 0;
+    final double? finishingDiff = player.xg == null || player.goals == null
+        ? null
+        : player.goals! - player.xg!;
+    final bool clinical = finishingDiff != null && finishingDiff >= 0;
 
     return Card(
       color: const Color(0xFF1E293B),
@@ -366,15 +450,17 @@ class _PlayerTacticalCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0F172A),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: Colors.white12),
                   ),
                   child: Text(
-                    '${player.position} | ${player.minutes}\'',
+                    '$_positionLabel | ${player.minutes ?? _notAvailable}\'',
                     style: const TextStyle(
                       color: Color(0xFF38BDF8),
                       fontSize: 11,
@@ -390,24 +476,35 @@ class _PlayerTacticalCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _MetricItem(label: 'أهداف', value: '${player.goals}'),
+                _MetricItem(
+                  label: AppLanguage.instance.isArabic ? 'أهداف' : 'Goals',
+                  value: player.goals?.toString() ?? _notAvailable,
+                ),
                 _MetricItem(
                   label: 'xG',
-                  value: player.xg.toStringAsFixed(2),
+                  value: player.xg?.toStringAsFixed(2) ?? _notAvailable,
                   highlightColor: const Color(0xFF38BDF8),
                 ),
                 _MetricItem(
-                  label: 'كفاءة الإنهاء',
-                  value:
-                      '${clinical ? '+' : ''}${finishingDiff.toStringAsFixed(2)}',
-                  highlightColor: clinical
+                  label: AppLanguage.instance.isArabic
+                      ? 'كفاءة الإنهاء'
+                      : 'Finishing',
+                  value: finishingDiff == null
+                      ? _notAvailable
+                      : '${clinical ? '+' : ''}${finishingDiff.toStringAsFixed(2)}',
+                  highlightColor: finishingDiff == null
+                      ? Colors.white54
+                      : clinical
                       ? const Color(0xFF4ADE80)
                       : const Color(0xFFF87171),
                 ),
-                _MetricItem(label: 'صناعة', value: '${player.assists}'),
+                _MetricItem(
+                  label: AppLanguage.instance.isArabic ? 'صناعة' : 'Assists',
+                  value: player.assists?.toString() ?? _notAvailable,
+                ),
                 _MetricItem(
                   label: 'xA',
-                  value: player.xa.toStringAsFixed(2),
+                  value: player.xa?.toStringAsFixed(2) ?? _notAvailable,
                   highlightColor: const Color(0xFFF59E0B),
                 ),
               ],
@@ -425,14 +522,24 @@ class _PlayerTacticalCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _SubStat(
-                      label: 'xGChain',
-                      value: player.xgChain.toStringAsFixed(2)),
+                    label: 'xGChain',
+                    value: player.xgChain?.toStringAsFixed(2) ?? _notAvailable,
+                  ),
                   _SubStat(
-                      label: 'xGBuildup',
-                      value: player.xgBuildup.toStringAsFixed(2)),
-                  _SubStat(label: 'تسديدات', value: '${player.shots}'),
+                    label: 'xGBuildup',
+                    value:
+                        player.xgBuildup?.toStringAsFixed(2) ?? _notAvailable,
+                  ),
                   _SubStat(
-                      label: 'تمريرات مفتاحية', value: '${player.keyPasses}'),
+                    label: AppLanguage.instance.isArabic ? 'تسديدات' : 'Shots',
+                    value: '${player.shots ?? _notAvailable}',
+                  ),
+                  _SubStat(
+                    label: AppLanguage.instance.isArabic
+                        ? 'تمريرات مفتاحية'
+                        : 'Key passes',
+                    value: '${player.keyPasses ?? _notAvailable}',
+                  ),
                 ],
               ),
             ),

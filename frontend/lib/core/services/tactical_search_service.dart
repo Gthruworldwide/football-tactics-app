@@ -16,7 +16,7 @@ class SearchBriefItem {
 }
 
 class TacticalSearchService {
-  static const String _apilayerKey = '995febc8029e43409f2cc90312bcf45e';
+  static const String _apilayerKey = String.fromEnvironment('APILAYER_KEY');
   static const String _baseUrl = 'https://api.apilayer.net/serpstack/search';
 
   static final Map<String, List<SearchBriefItem>> _cache = {};

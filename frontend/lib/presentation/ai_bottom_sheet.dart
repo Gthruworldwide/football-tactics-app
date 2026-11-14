@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../logic/tactical_bloc.dart';
 
 /// Modal bottom sheet for displaying AI tactical summary
 class AIBottomSheet extends StatefulWidget {
   final String matchId;
 
-  const AIBottomSheet({
-    required this.matchId,
-    super.key,
-  });
+  const AIBottomSheet({required this.matchId, super.key});
 
   @override
   State<AIBottomSheet> createState() => _AIBottomSheetState();
@@ -101,8 +99,8 @@ class _AIBottomSheetState extends State<AIBottomSheet>
             child: _isGenerating
                 ? _buildGeneratingState()
                 : tacticalBloc.aiSummary.isNotEmpty
-                    ? _buildSummaryContent(tacticalBloc.aiSummary)
-                    : _buildPromptArea(),
+                ? _buildSummaryContent(tacticalBloc.aiSummary)
+                : _buildPromptArea(),
           ),
         ],
       ),
@@ -176,7 +174,7 @@ class _AIBottomSheetState extends State<AIBottomSheet>
     );
   }
 
-  Widget _buildBottomBar(Theme theme, TacticalBloc tacticalBloc) {
+  Widget _buildBottomBar(ThemeData theme, TacticalBloc tacticalBloc) {
     return Container(
       color: theme.colorScheme.surface,
       padding: const EdgeInsets.all(16.0),
@@ -199,10 +197,12 @@ class _AIBottomSheetState extends State<AIBottomSheet>
           const SizedBox(width: 8),
           Expanded(
             child: ElevatedButton(
-              onPressed: _isGenerating ? null : () {
-                // Generate summary
-                _generateSummary();
-              },
+              onPressed: _isGenerating
+                  ? null
+                  : () {
+                      // Generate summary
+                      _generateSummary();
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,

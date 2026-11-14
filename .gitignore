@@ -15,9 +15,13 @@ frontend/.flutter-plugins-dependencies
 frontend/pubspec.lock
 
 # Backend
-backend/__pycache__/
-backend/.pytest_cache/
+__pycache__/
+.pytest_cache/
 *.pyc
+.venv*/
+*.db
+*.db-wal
+*.db-shm
 
 # Logs
 *.log
@@ -31,3 +35,6 @@ tunnel_logs.txt
 # OS
 Thumbs.db
 .DS_Store
+
+# Local secrets
+frontend/dart_defines.json

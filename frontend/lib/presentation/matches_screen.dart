@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../core/network/api_client.dart';
+import '../core/models/football_api_models.dart';
 import '../core/services/geo_service.dart';
 import '../core/services/tactical_search_service.dart';
 import '../core/services/travel_fatigue_service.dart';
@@ -79,46 +82,33 @@ class _MatchesScreenState extends State<MatchesScreen> {
         ApiClient.matchesEndpoint(_selectedCountry),
       );
       if (response.statusCode == 200) {
-        final decoded = jsonDecode(response.body);
-        final List rawList = decoded['response'] ?? [];
-
-        final parsed = rawList.map((item) {
-          final fixture = item['fixture'] ?? {};
-          final league = item['league'] ?? {};
-          final teams = item['teams'] ?? {};
-          final goals = item['goals'] ?? {};
-          final statusObj = fixture['status'] ?? {};
-          final shortStatus = statusObj['short'] ?? 'NS';
-          final elapsed = statusObj['elapsed'];
-          final venue = fixture['venue'] ?? {};
-
-          final bool isLive = ['1H', '2H', 'HT', 'ET', 'P'].contains(shortStatus);
-          final String displayStatus = isLive && elapsed != null
-              ? "LIVE $elapsed'"
-              : shortStatus.toString();
-
+        final matchesResponse = MatchesResponse.fromJson(
+          response.body.isEmpty
+              ? const <String, dynamic>{}
+              : jsonDecode(response.body) as Map<String, dynamic>,
+        );
+        final parsed = matchesResponse.matches.map((match) {
           return {
-            'league': league['name'] ?? 'Competition',
-            'home': teams['home']?['name'] ?? 'Home',
-            'away': teams['away']?['name'] ?? 'Away',
-            'homeScore': goals['home'],
-            'awayScore': goals['away'],
-            'status': displayStatus,
-            'isLive': isLive,
-            'possession': 50.0,
-            'xgHome': '1.35',
-            'xgAway': '1.10',
-            'shotsHome': 0,
-            'shotsAway': 0,
-            'venueName': venue['name'] ?? '',
-            'venueCity': venue['city'] ?? '',
+            'league': match.leagueName,
+            'home': match.homeTeam,
+            'away': match.awayTeam,
+            'homeScore': match.homeScore,
+            'awayScore': match.awayScore,
+            'status': match.displayStatus,
+            'isLive': match.isLive,
+            'xgHome': match.homeXg?.toStringAsFixed(2) ?? 'N/A',
+            'xgAway': match.awayXg?.toStringAsFixed(2) ?? 'N/A',
+            'venueName': match.venueName,
+            'venueCity': match.venueCity,
           };
         }).toList();
 
         // ترتيب المباريات: الحية أولاً ثم الفرق المفضلة
         parsed.sort((a, b) {
-          final aScore = (a['isLive'] ? 0 : 2) + (_isMatchTracked(a) ? 0 : 1);
-          final bScore = (b['isLive'] ? 0 : 2) + (_isMatchTracked(b) ? 0 : 1);
+          final aScore =
+              ((a['isLive'] as bool) ? 0 : 2) + (_isMatchTracked(a) ? 0 : 1);
+          final bScore =
+              ((b['isLive'] as bool) ? 0 : 2) + (_isMatchTracked(b) ? 0 : 1);
           return aScore.compareTo(bScore);
         });
 
@@ -136,7 +126,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
     } catch (e) {
       setState(() {
         _matches = [];
-        _errorMessage = 'Connection timeout. Pull down to retry.';
+        _errorMessage = e is ApiException
+            ? e.message
+            : 'Connection failed. Pull down or tap Retry.';
         _isLoading = false;
       });
     }
@@ -188,23 +180,23 @@ class _MatchesScreenState extends State<MatchesScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const XgAnalyticsScreen(
-                    serverHost: '192.168.1.14:8000',
-                  ),
+                  builder: (context) =>
+                      const XgAnalyticsScreen(serverHost: '192.168.1.14:8000'),
                 ),
               );
             },
           ),
           IconButton(
-            icon: const Icon(Icons.person_search_rounded, color: AppTheme.accentCyan),
+            icon: const Icon(
+              Icons.person_search_rounded,
+              color: AppTheme.accentCyan,
+            ),
             tooltip: 'Scouting Database',
             onPressed: () {
               HapticFeedback.lightImpact();
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const PlayerSearchScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const PlayerSearchScreen()),
               );
             },
           ),
@@ -249,8 +241,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       color: isSelected
                           ? AppTheme.accentEmerald
                           : AppTheme.textSecondary,
-                      fontWeight:
-                          isSelected ? FontWeight.w800 : FontWeight.w600,
+                      fontWeight: isSelected
+                          ? FontWeight.w800
+                          : FontWeight.w600,
                       fontSize: 12,
                     ),
                     shape: RoundedRectangleBorder(
@@ -288,17 +281,25 @@ class _MatchesScreenState extends State<MatchesScreen> {
         },
         destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.sports_soccer_outlined,
-                color: AppTheme.textSecondary),
-            selectedIcon:
-                Icon(Icons.sports_soccer, color: AppTheme.accentEmerald),
+            icon: Icon(
+              Icons.sports_soccer_outlined,
+              color: AppTheme.textSecondary,
+            ),
+            selectedIcon: Icon(
+              Icons.sports_soccer,
+              color: AppTheme.accentEmerald,
+            ),
             label: 'Matches',
           ),
           NavigationDestination(
-            icon: Icon(Icons.table_chart_outlined,
-                color: AppTheme.textSecondary),
-            selectedIcon:
-                Icon(Icons.table_chart, color: AppTheme.accentEmerald),
+            icon: Icon(
+              Icons.table_chart_outlined,
+              color: AppTheme.textSecondary,
+            ),
+            selectedIcon: Icon(
+              Icons.table_chart,
+              color: AppTheme.accentEmerald,
+            ),
             label: 'Standings',
           ),
         ],
@@ -320,13 +321,19 @@ class _MatchesScreenState extends State<MatchesScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.cloud_off_rounded,
-                  size: 44, color: Color(0xFFEF4444)),
+              const Icon(
+                Icons.cloud_off_rounded,
+                size: 44,
+                color: Color(0xFFEF4444),
+              ),
               const SizedBox(height: 12),
               Text(
                 _errorMessage!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
@@ -334,9 +341,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
                   backgroundColor: AppTheme.accentEmerald,
                   foregroundColor: AppTheme.bgObsidian,
                 ),
-                onPressed: _openSettings,
-                icon: const Icon(Icons.settings_rounded, size: 18),
-                label: const Text('CONFIGURE SERVER URL'),
+                onPressed: _fetchMatches,
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: const Text('RETRY'),
               ),
             ],
           ),
@@ -386,7 +393,6 @@ class _MatchesScreenState extends State<MatchesScreen> {
             isLive: m['isLive'],
             isTracked: _isMatchTracked(m),
             activeLens: _activeLens,
-            homePossession: m['possession'],
             xgHome: m['xgHome'],
             xgAway: m['xgAway'],
             onTap: () => _showMatchTacticalSheet(context, m),
@@ -397,7 +403,9 @@ class _MatchesScreenState extends State<MatchesScreen> {
   }
 
   void _showMatchTacticalSheet(
-      BuildContext context, Map<String, dynamic> match) {
+    BuildContext context,
+    Map<String, dynamic> match,
+  ) {
     HapticFeedback.lightImpact();
     final homeTeam = match['home'].toString();
     final isHomeFav = _favoriteTeams.contains(homeTeam);
@@ -465,18 +473,12 @@ class _MatchesScreenState extends State<MatchesScreen> {
                 ),
               ),
               const SizedBox(height: 18),
-              _buildStatRow(
-                  'Expected Goals (xG)', match['xgHome'], match['xgAway']),
-              const Divider(color: AppTheme.borderSubtle, height: 22),
-              _buildStatRow(
-                'Ball Possession',
-                '${(match['possession'] as double).toInt()}%',
-                '${(100 - (match['possession'] as double)).toInt()}%',
-              ),
-              const Divider(color: AppTheme.borderSubtle, height: 22),
-              _buildStatRow('Total Shots', '${match['shotsHome']}',
-                  '${match['shotsAway']}'),
-              const Divider(color: AppTheme.borderSubtle, height: 22),
+              if (match['xgHome'] != 'N/A' && match['xgAway'] != 'N/A')
+                _buildStatRow(
+                  'Expected Goals (xG)',
+                  match['xgHome'],
+                  match['xgAway'],
+                ),
               FutureBuilder<StadiumWeather?>(
                 future: WeatherService.getVenueWeather(
                   match['venueCity'],
@@ -509,77 +511,80 @@ class _MatchesScreenState extends State<MatchesScreen> {
                         travel.fatigueRisk,
                       ),
                       const Divider(color: AppTheme.borderSubtle, height: 22),
-              const Text(
-                'LIVE LINEUP & INJURY INTEL',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.1,
-                  color: AppTheme.accentCyan,
-                ),
-              ),
-              const SizedBox(height: 8),
-              FutureBuilder<List<SearchBriefItem>>(
-                future: TacticalSearchService.fetchTacticalIntel(
-                  '${match['home']} vs ${match['away']} lineups injuries tactical preview',
-                ),
-                builder: (context, snap) {
-                  if (snap.connectionState == ConnectionState.waiting) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: LinearProgressIndicator(
-                        color: AppTheme.accentCyan,
-                        backgroundColor: AppTheme.surfaceElevated,
-                      ),
-                    );
-                  }
-                  final intel = snap.data ?? [];
-                  if (intel.isEmpty) {
-                    return const Text(
-                      'No pre-match bulletins indexed yet.',
-                      style: TextStyle(
-                          fontSize: 12, color: AppTheme.textSecondary),
-                    );
-                  }
-                  return Column(
-                    children: intel.take(2).map((item) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppTheme.surfaceElevated,
-                          borderRadius: BorderRadius.circular(10),
+                      const Text(
+                        'LIVE LINEUP & INJURY INTEL',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.1,
+                          color: AppTheme.accentCyan,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: AppTheme.textPrimary,
+                      ),
+                      const SizedBox(height: 8),
+                      FutureBuilder<List<SearchBriefItem>>(
+                        future: TacticalSearchService.fetchTacticalIntel(
+                          '${match['home']} vs ${match['away']} lineups injuries tactical preview',
+                        ),
+                        builder: (context, snap) {
+                          if (snap.connectionState == ConnectionState.waiting) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: LinearProgressIndicator(
+                                color: AppTheme.accentCyan,
+                                backgroundColor: AppTheme.surfaceElevated,
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              item.snippet,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 11,
+                            );
+                          }
+                          final intel = snap.data ?? [];
+                          if (intel.isEmpty) {
+                            return const Text(
+                              'No pre-match bulletins indexed yet.',
+                              style: TextStyle(
+                                fontSize: 12,
                                 color: AppTheme.textSecondary,
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),SizedBox(height: 6),
+                            );
+                          }
+                          return Column(
+                            children: intel.take(2).map((item) {
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 8),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.surfaceElevated,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item.title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppTheme.textPrimary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      item.snippet,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        color: AppTheme.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 6),
                       Text(
                         travel.tacticalNote,
                         style: const TextStyle(
@@ -614,9 +619,8 @@ class _MatchesScreenState extends State<MatchesScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => PlayerSearchScreen(
-                          initialQuery: match['home'],
-                        ),
+                        builder: (_) =>
+                            PlayerSearchScreen(initialQuery: match['home']),
                       ),
                     );
                   },
@@ -663,9 +667,3 @@ class _MatchesScreenState extends State<MatchesScreen> {
     );
   }
 }
-
-
-
-
-
-

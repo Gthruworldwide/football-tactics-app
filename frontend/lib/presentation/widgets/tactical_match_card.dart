@@ -1,5 +1,7 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
+
 import '../../core/services/sports_media_service.dart';
 import '../../core/services/weather_service.dart';
 import '../../core/theme/app_theme.dart';
@@ -16,7 +18,7 @@ class TacticalMatchCard extends StatelessWidget {
   final bool isLive;
   final bool isTracked;
   final String activeLens;
-  final double homePossession;
+  final double? homePossession;
   final String xgHome;
   final String xgAway;
   final VoidCallback onTap;
@@ -33,16 +35,18 @@ class TacticalMatchCard extends StatelessWidget {
     this.isLive = false,
     this.isTracked = false,
     this.activeLens = 'Possession',
-    this.homePossession = 50.0,
-    this.xgHome = '1.20',
-    this.xgAway = '0.95',
+    this.homePossession,
+    this.xgHome = 'N/A',
+    this.xgAway = 'N/A',
     required this.onTap,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    final awayPossession = (100.0 - homePossession).clamp(0.0, 100.0);
+    final awayPossession = homePossession == null
+        ? null
+        : (100.0 - homePossession!).clamp(0.0, 100.0);
 
     return GestureDetector(
       onTap: onTap,
@@ -58,8 +62,8 @@ class TacticalMatchCard extends StatelessWidget {
             color: isLive
                 ? AppTheme.accentEmerald.withOpacity(0.55)
                 : (isTracked
-                    ? AppTheme.accentCyan.withOpacity(0.45)
-                    : AppTheme.borderSubtle),
+                      ? AppTheme.accentCyan.withOpacity(0.45)
+                      : AppTheme.borderSubtle),
             width: 1,
           ),
         ),
@@ -69,8 +73,11 @@ class TacticalMatchCard extends StatelessWidget {
             Row(
               children: [
                 if (isTracked) ...[
-                  const Icon(Icons.star_rounded,
-                      size: 14, color: AppTheme.accentCyan),
+                  const Icon(
+                    Icons.star_rounded,
+                    size: 14,
+                    color: AppTheme.accentCyan,
+                  ),
                   const SizedBox(width: 4),
                 ],
                 Expanded(
@@ -119,8 +126,10 @@ class TacticalMatchCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Container(
                     constraints: const BoxConstraints(minWidth: 64),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppTheme.surfaceElevated,
                       borderRadius: BorderRadius.circular(10),
@@ -167,12 +176,12 @@ class TacticalMatchCard extends StatelessWidget {
             ),
 
             // Telemetry Bar
-            if (homeScore != null) ...[
+            if (homeScore != null && homePossession != null) ...[
               const SizedBox(height: 12),
               Row(
                 children: [
                   Text(
-                    '${homePossession.toInt()}%',
+                    '${homePossession!.toInt()}%',
                     style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -189,12 +198,12 @@ class TacticalMatchCard extends StatelessWidget {
                         child: Row(
                           children: [
                             Expanded(
-                              flex: homePossession.toInt().clamp(10, 90),
+                              flex: homePossession!.toInt().clamp(10, 90),
                               child: Container(color: AppTheme.accentEmerald),
                             ),
                             const SizedBox(width: 2),
                             Expanded(
-                              flex: awayPossession.toInt().clamp(10, 90),
+                              flex: awayPossession!.toInt().clamp(10, 90),
                               child: Container(color: AppTheme.accentCyan),
                             ),
                           ],
@@ -204,7 +213,7 @@ class TacticalMatchCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '${awayPossession.toInt()}%',
+                    '${awayPossession!.toInt()}%',
                     style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -220,20 +229,28 @@ class TacticalMatchCard extends StatelessWidget {
             if (venueCity.isNotEmpty || venueName.isNotEmpty) ...[
               const SizedBox(height: 10),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: AppTheme.surfaceElevated.withOpacity(0.7),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: FutureBuilder<StadiumWeather?>(
-                  future: WeatherService.getVenueWeather(venueCity, venueName: venueName),
+                  future: WeatherService.getVenueWeather(
+                    venueCity,
+                    venueName: venueName,
+                  ),
                   builder: (context, snapshot) {
                     final w = snapshot.data;
                     return Row(
                       children: [
-                        const Icon(Icons.stadium_outlined,
-                            size: 13, color: AppTheme.textSecondary),
+                        const Icon(
+                          Icons.stadium_outlined,
+                          size: 13,
+                          color: AppTheme.textSecondary,
+                        ),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(

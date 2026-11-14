@@ -1,0 +1,2 @@
+# Only needed to run scripts/scrape_understat.py locally (not inside Docker)
+scrapling[fetchers]

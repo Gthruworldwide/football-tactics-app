@@ -23,7 +23,7 @@
       "type": "local",
       "command": [
         "D:\\football-tactics-app\\.venv_mcp\\Scripts\\python.exe",
-        "D:\\football-tactics-app\\backend\\sqlite_mcp.py"
+        "D:\\football-tactics-app\\backend\\scripts\\sqlite_mcp.py"
       ],
       "enabled": true
     }

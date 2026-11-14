@@ -31,7 +31,7 @@ class NewsArticle {
 }
 
 class NewsService {
-  static const String _accessKey = '995febc8029e43409f2cc90312bcf45e';
+  static const String _accessKey = String.fromEnvironment('APILAYER_KEY');
   static const String _baseUrl = 'https://api.apilayer.net/mediastack/v1/news';
 
   static List<NewsArticle> _cachedNews = [];
