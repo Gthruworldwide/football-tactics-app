@@ -10,8 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   # BLoC State Management
+  bloc: ^9.2.1
   flutter_bloc: ^9.1.1
   equatable: ^3.0.0
   hive: ^2.2.3
@@ -35,8 +38,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # Assets for country flags
-  assets:
-    - assets/flags/
 
   # Fonts - using default Material fonts

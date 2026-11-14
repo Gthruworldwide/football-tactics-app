@@ -1,5 +1,6 @@
 import 'dart:developer' as dev;
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -87,8 +88,10 @@ class TacticalCache extends Equatable {
       awayPPDA: awayPPDA ?? this.awayPPDA,
       homeFieldTilt: homeFieldTilt ?? this.homeFieldTilt,
       awayFieldTilt: awayFieldTilt ?? this.awayFieldTilt,
-      homeFieldTiltPercentage: homeFieldTiltPercentage ?? this.homeFieldTiltPercentage,
-      awayFieldTiltPercentage: awayFieldTiltPercentage ?? this.awayFieldTiltPercentage,
+      homeFieldTiltPercentage:
+          homeFieldTiltPercentage ?? this.homeFieldTiltPercentage,
+      awayFieldTiltPercentage:
+          awayFieldTiltPercentage ?? this.awayFieldTiltPercentage,
       momentum: momentum ?? this.momentum,
       homeCommentary: homeCommentary ?? this.homeCommentary,
       awayCommentary: awayCommentary ?? this.awayCommentary,
@@ -107,8 +110,10 @@ class TacticalCache extends Equatable {
       awayPPDA: map['awayPPDA'] as int? ?? 0,
       homeFieldTilt: map['homeFieldTilt'] as String? ?? '0%',
       awayFieldTilt: map['awayFieldTilt'] as String? ?? '0%',
-      homeFieldTiltPercentage: (map['homeFieldTiltPercentage'] as num?)?.toDouble() ?? 0.0,
-      awayFieldTiltPercentage: (map['awayFieldTiltPercentage'] as num?)?.toDouble() ?? 0.0,
+      homeFieldTiltPercentage:
+          (map['homeFieldTiltPercentage'] as num?)?.toDouble() ?? 0.0,
+      awayFieldTiltPercentage:
+          (map['awayFieldTiltPercentage'] as num?)?.toDouble() ?? 0.0,
       momentum: map['momentum'] as String? ?? 'Balanced',
       homeCommentary: map['homeCommentary'] as String? ?? '',
       awayCommentary: map['awayCommentary'] as String? ?? '',
@@ -171,14 +176,15 @@ class TacticalLoading extends TacticalState {
 class TacticalLoaded extends TacticalState {
   final TacticalCache tacticalCache;
 
-  TacticalLoaded({required this.tacticalCache}) : super(tacticalCache: tacticalCache);
+  TacticalLoaded({required this.tacticalCache})
+    : super(tacticalCache: tacticalCache);
 }
 
 class TacticalError extends TacticalState {
   final String error;
 
   TacticalError({required this.error, String? selectedMatchId})
-      : super(errorMessage: error, selectedMatchId: selectedMatchId);
+    : super(errorMessage: error, selectedMatchId: selectedMatchId);
 }
 
 enum Status { initial, loading, loaded, error }
@@ -222,12 +228,22 @@ class MatchSelected extends TacticalEvent {
   });
 }
 
+class GenerateAISummary extends TacticalEvent {
+  final String matchId;
+
+  GenerateAISummary({required this.matchId});
+}
+
 class PPDAUpdate extends TacticalEvent {
   final String matchId;
   final int homePPDA;
   final int awayPPDA;
 
-  PPDAUpdate({required this.matchId, required this.homePPDA, required this.awayPPDA});
+  PPDAUpdate({
+    required this.matchId,
+    required this.homePPDA,
+    required this.awayPPDA,
+  });
 }
 
 class FieldTiltUpdate extends TacticalEvent {
@@ -235,7 +251,11 @@ class FieldTiltUpdate extends TacticalEvent {
   final String homeFieldTilt;
   final String awayFieldTilt;
 
-  FieldTiltUpdate({required this.matchId, required this.homeFieldTilt, required this.awayFieldTilt});
+  FieldTiltUpdate({
+    required this.matchId,
+    required this.homeFieldTilt,
+    required this.awayFieldTilt,
+  });
 }
 
 class MomentumUpdate extends TacticalEvent {
@@ -261,4 +281,94 @@ class TacticalStatusFilterChanged extends TacticalEvent {
   final String status;
 
   TacticalStatusFilterChanged({required this.status});
+}
+
+/// Runtime BLoC used by the AI tactical sheet and tactical screens.
+///
+/// The original file contained the event/state contracts but no BLoC
+/// implementation, which made the UI fail to compile. This implementation
+/// keeps the existing contracts and provides a safe local fallback until the
+/// tactical API is connected.
+class TacticalBloc extends Bloc<TacticalEvent, TacticalState> {
+  String aiSummary = '';
+
+  TacticalBloc() : super(TacticalInitial()) {
+    on<RefreshTacticalData>(_onRefresh);
+    on<MatchSelected>(_onMatchSelected);
+    on<GenerateAISummary>(_onGenerateSummary);
+    on<PPDAUpdate>(_onPpdaUpdate);
+    on<FieldTiltUpdate>(_onFieldTiltUpdate);
+    on<MomentumUpdate>(_onMomentumUpdate);
+    on<CommentaryUpdate>(_onCommentaryUpdate);
+  }
+
+  void refreshTacticalData({required String matchId}) {
+    add(RefreshTacticalData(matchId: matchId));
+  }
+
+  Future<void> _onRefresh(
+    RefreshTacticalData event,
+    Emitter<TacticalState> emit,
+  ) async {
+    emit(TacticalLoading());
+  }
+
+  Future<void> _onMatchSelected(
+    MatchSelected event,
+    Emitter<TacticalState> emit,
+  ) async {
+    emit(
+      TacticalLoaded(
+        tacticalCache: TacticalCache(
+          matchId: event.matchId,
+          homeXG: event.homeXG,
+          awayXG: event.awayXG,
+          homeXA: event.homeXA,
+          awayXA: event.awayXA,
+          homePPDA: event.homePPDA,
+          awayPPDA: event.awayPPDA,
+          homeFieldTilt: event.homeFieldTilt,
+          awayFieldTilt: event.awayFieldTilt,
+          homeFieldTiltPercentage: _percentage(event.homeFieldTilt),
+          awayFieldTiltPercentage: _percentage(event.awayFieldTilt),
+          momentum: event.momentum,
+          timestamp: DateTime.now(),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onGenerateSummary(
+    GenerateAISummary event,
+    Emitter<TacticalState> emit,
+  ) async {
+    aiSummary =
+        'Tactical summary is unavailable until live match telemetry is loaded.';
+    emit(state);
+  }
+
+  Future<void> _onPpdaUpdate(
+    PPDAUpdate event,
+    Emitter<TacticalState> emit,
+  ) async {}
+
+  Future<void> _onFieldTiltUpdate(
+    FieldTiltUpdate event,
+    Emitter<TacticalState> emit,
+  ) async {}
+
+  Future<void> _onMomentumUpdate(
+    MomentumUpdate event,
+    Emitter<TacticalState> emit,
+  ) async {}
+
+  Future<void> _onCommentaryUpdate(
+    CommentaryUpdate event,
+    Emitter<TacticalState> emit,
+  ) async {}
+
+  double _percentage(String value) {
+    final normalized = value.replaceAll('%', '').trim();
+    return double.tryParse(normalized) ?? 0;
+  }
 }

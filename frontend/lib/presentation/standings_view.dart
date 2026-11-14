@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+
 import '../core/theme/app_theme.dart';
 import '../core/network/api_client.dart';
 import '../core/services/user_prefs_service.dart';
@@ -41,31 +43,24 @@ class _StandingsViewState extends State<StandingsView> {
       );
       if (res.statusCode == 200) {
         final decoded = jsonDecode(res.body);
-        final List resp = decoded['response'] ?? [];
-        if (resp.isNotEmpty) {
-          final List standingsGroups =
-              resp[0]['league']?['standings'] ?? [];
-          if (standingsGroups.isNotEmpty) {
-            final List table = standingsGroups[0];
-            final parsed = table.map((row) {
-              final gdNum = row['goalsDiff'] ?? 0;
-              return {
-                'rank': row['rank'] ?? 0,
-                'team': row['team']?['name'] ?? 'Team',
-                'played': row['all']?['played'] ?? 0,
-                'gd': gdNum >= 0 ? '+$gdNum' : '$gdNum',
-                'pts': row['points'] ?? 0,
-                'form': (row['form'] ?? 'DDDDD').toString(),
-              };
-            }).toList();
-
-            setState(() {
-              _standings = parsed;
-              _isLoading = false;
-            });
-            return;
-          }
-        }
+        final List rows = decoded['standings'] ?? [];
+        final parsed = rows.map((row) {
+          final team = row['team'] ?? {};
+          final gdNum = row['goalsDiff'] ?? 0;
+          return {
+            'rank': row['rank'] ?? 0,
+            'team': team['name'] ?? 'Team',
+            'played': row['all']?['played'] ?? 0,
+            'gd': gdNum >= 0 ? '+$gdNum' : '$gdNum',
+            'pts': row['points'] ?? 0,
+            'form': (row['form'] ?? '').toString(),
+          };
+        }).toList();
+        setState(() {
+          _standings = parsed;
+          _isLoading = false;
+        });
+        return;
       }
     } catch (_) {}
 
@@ -97,8 +92,10 @@ class _StandingsViewState extends State<StandingsView> {
       itemCount: _standings.length,
       itemBuilder: (context, index) {
         final team = _standings[index];
-        final isFavorite = widget.favoriteTeams.any((t) =>
-          team['team'].toString().toLowerCase().contains(t.toLowerCase()));
+        final isFavorite = widget.favoriteTeams.any(
+          (t) =>
+              team['team'].toString().toLowerCase().contains(t.toLowerCase()),
+        );
 
         return _StandingCard(
           rank: team['rank'] ?? index + 1,
@@ -145,7 +142,9 @@ class _StandingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isFavorite ? AppTheme.accentEmerald : Theme.of(context).colorScheme.onSurface;
+    final color = isFavorite
+        ? AppTheme.accentEmerald
+        : Theme.of(context).colorScheme.onSurface;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
@@ -156,14 +155,18 @@ class _StandingCard extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: isFavorite ? AppTheme.accentEmerald.withValues(alpha: 0.1) : Theme.of(context).colorScheme.surface,
+            color: isFavorite
+                ? AppTheme.accentEmerald.withValues(alpha: 0.1)
+                : Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Center(
             child: Text(
               '$rank',
               style: TextStyle(
-                color: isFavorite ? AppTheme.accentEmerald : Theme.of(context).colorScheme.onSurface,
+                color: isFavorite
+                    ? AppTheme.accentEmerald
+                    : Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w800,
                 fontSize: 14,
               ),
@@ -184,11 +187,7 @@ class _StandingCard extends StatelessWidget {
               ),
             ),
             if (isFavorite)
-              const Icon(
-                Icons.star,
-                color: AppTheme.accentEmerald,
-                size: 18,
-              ),
+              const Icon(Icons.star, color: AppTheme.accentEmerald, size: 18),
           ],
         ),
         trailing: Row(

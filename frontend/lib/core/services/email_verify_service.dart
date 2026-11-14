@@ -9,7 +9,7 @@ class EmailVerifyResult {
 }
 
 class EmailVerifyService {
-  static const String _accessKey = '995febc8029e43409f2cc90312bcf45e';
+  static const String _accessKey = String.fromEnvironment('APILAYER_KEY');
   static const String _baseUrl = 'https://api.apilayer.net/mailboxlayer/api/check';
 
   static Future<EmailVerifyResult> verifyEmail(String email) async {

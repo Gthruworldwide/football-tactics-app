@@ -34,28 +34,28 @@ A minimalist Single Page Application (SPA) for football analysts, commentators, 
 football-tactics-app/
 ├── backend/
 │   ├── app/
-│   │   ├── api/v1/endpoints/    ← API endpoints
-│   │   ├── core/                ← Config, database, constants
-│   │   ├── services/            ← API-Football, scrapping, AI
-│   │   └── main.py              ← FastAPI entry point
-│   ├── Dockerfile               ← Container configuration
-│   └── requirements.txt         ← Python dependencies
-├── frontend/
-│   ├── lib/
-│   │   ├── core/                ← Constants, themes
-│   │   ├── data/                └── Hive local cache
-│   │   ├── logic/               └── BLoC architecture
-│   │   │   ├── matches_bloc.dart
-│   │   │   ├── country_bloc.dart
-│   │   │   └── tactical_bloc.dart
-│   │   └── presentation/        └── UI widgets
-│   │       ├── match_card.dart
-│   │       ├── date_bar.dart
-│   │       └── league_filter_chips.dart
-│   └── pubspec.yaml             ← Flutter dependencies
-├── mcp_server/
-│   └── server.py                ← MCP server entry point
-└── README.md                    ← This file
+│   │   ├── api/            ← v1.py (matches/standings), tactics.py (read DB), sync.py
+│   │   ├── core/           ← config, database (SQLite schema), redis_client
+│   │   ├── services/       ← api_football, tactical_metrics, ai_summary, geolocation
+│   │   └── main.py         ← FastAPI entry point
+│   ├── scripts/            ← scrape_understat.py, sqlite_mcp.py (run from backend/)
+│   ├── tests/
+│   ├── data/               ← SQLite DB lives here (git-ignored)
+│   ├── Dockerfile
+│   └── requirements*.txt
+├── frontend/               ← Flutter app (BLoC)
+├── mcp_server/             ← AI summary MCP server (own Dockerfile)
+├── docker-compose.yml
+└── .env.example
+```
+
+## Run
+
+```bash
+cp .env.example .env          # fill in keys
+docker compose up --build     # backend :8000, mcp :8001
+cd backend && python -m pytest -q
+cd backend && python -m scripts.scrape_understat   # fill the xG database (needs requirements-scrapers.txt)
 ```
 
 ## Implementation Status
@@ -114,3 +114,14 @@ python server.py
 - [x] **SPA WITH MINIMALIST UI**: Horizontal date bar, filter chips, match cards
 - [x] **Tactical Analytics**: xG, xA, PPDA, Field Tilt, Momentum, AI summaries
 - [x] **Single Page Application**: All content on one screen
+## Flutter API keys
+
+Keys are no longer in the source. Copy `frontend/dart_defines.example.json` to `frontend/dart_defines.json`, fill it in, then:
+
+```bash
+cd frontend
+flutter run --dart-define-from-file=dart_defines.json
+flutter build apk --release --dart-define-from-file=dart_defines.json
+```
+
+For CI, add `API_SPORTS_KEY`, `RAPIDAPI_KEY`, `APILAYER_KEY` as GitHub repository secrets.

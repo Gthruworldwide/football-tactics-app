@@ -1,6 +1,13 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+import '../core/data_error_localizer.dart';
+import '../core/data_source_label.dart';
+import '../core/league_catalog.dart';
+import '../core/services/app_language.dart';
+import 'widgets/language_menu_button.dart';
 
 /// نموذج بيانات ترتيب الفريق في الدوري
 class StandingTeamModel {
@@ -33,47 +40,59 @@ class StandingTeamModel {
   });
 
   factory StandingTeamModel.fromJson(Map<String, dynamic> json) {
-    final int gf = (json['goals_for'] ?? json['gf'] ?? 0) as int;
-    final int ga = (json['goals_against'] ?? json['ga'] ?? 0) as int;
+    final team = json['team'] is Map<String, dynamic>
+        ? json['team'] as Map<String, dynamic>
+        : const <String, dynamic>{};
+    final all = json['all'] is Map<String, dynamic>
+        ? json['all'] as Map<String, dynamic>
+        : const <String, dynamic>{};
+    final goals = all['goals'] is Map<String, dynamic>
+        ? all['goals'] as Map<String, dynamic>
+        : const <String, dynamic>{};
+    final int gf = _asInt(json['goals_for'] ?? json['gf'] ?? goals['for']);
+    final int ga = _asInt(
+      json['goals_against'] ?? json['ga'] ?? goals['against'],
+    );
     return StandingTeamModel(
-      rank: (json['rank'] ?? json['position'] ?? 0) as int,
-      teamName: (json['team_name'] ?? json['team'] ?? '').toString(),
-      league: (json['league'] ?? '').toString(),
-      played: (json['played'] ?? json['mp'] ?? 0) as int,
-      won: (json['won'] ?? json['w'] ?? 0) as int,
-      drawn: (json['drawn'] ?? json['d'] ?? 0) as int,
-      lost: (json['lost'] ?? json['l'] ?? 0) as int,
+      rank: _asInt(json['rank'] ?? json['position']),
+      teamName: (json['team_name'] ?? team['name'] ?? json['team'] ?? '')
+          .toString(),
+      league: (json['league'] ?? json['group'] ?? '').toString(),
+      played: _asInt(json['played'] ?? json['mp'] ?? all['played']),
+      won: _asInt(json['won'] ?? json['w'] ?? all['win']),
+      drawn: _asInt(json['drawn'] ?? json['d'] ?? all['draw']),
+      lost: _asInt(json['lost'] ?? json['l'] ?? all['lose']),
       goalsFor: gf,
       goalsAgainst: ga,
-      goalDiff: (json['goal_diff'] ?? json['gd'] ?? (gf - ga)) as int,
-      points: (json['points'] ?? json['pts'] ?? 0) as int,
+      goalDiff: _asInt(
+        json['goal_diff'] ?? json['gd'] ?? json['goalsDiff'] ?? (gf - ga),
+      ),
+      points: _asInt(json['points'] ?? json['pts']),
       form: (json['form'] ?? '').toString(),
     );
   }
+
+  static int _asInt(Object? value) =>
+      value is num ? value.toInt() : int.tryParse(value?.toString() ?? '') ?? 0;
 }
 
 class StandingsScreen extends StatefulWidget {
   final String serverHost;
 
-  const StandingsScreen({
-    super.key,
-    this.serverHost = '192.168.1.5:8000',
-  });
+  const StandingsScreen({super.key, this.serverHost = '192.168.1.14:8000'});
 
   @override
   State<StandingsScreen> createState() => _StandingsScreenState();
 }
 
 class _StandingsScreenState extends State<StandingsScreen> {
-  final List<String> _leagues = const [
-    'La Liga',
-    'Premier League',
-    'Bundesliga',
-    'Serie A',
-    'Ligue 1',
-  ];
+  final _leagues = LeagueCatalog.supported
+      .where((option) => option.code != 'EG')
+      .toList(growable: false);
 
-  String _selectedLeague = 'La Liga';
+  String _selectedLeague = 'ESP';
+  int? _season;
+  String? _source;
   late Future<List<StandingTeamModel>> _standingsFuture;
 
   @override
@@ -83,20 +102,28 @@ class _StandingsScreenState extends State<StandingsScreen> {
   }
 
   Future<List<StandingTeamModel>> _fetchStandings(String league) async {
-    final uri = Uri.http(
-      widget.serverHost,
-      '/api/tactics/standings',
-      {'league': league},
-    );
+    final uri = Uri.http(widget.serverHost, '/api/v1/standings/$league');
 
-    final response = await http.get(uri).timeout(const Duration(seconds: 10));
+    final response = await http.get(uri).timeout(const Duration(seconds: 40));
 
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      final season = decoded['season'];
+      final source = decoded['source'] as String?;
+      // A slow response for a previously selected league must not overwrite
+      // the season label for the currently selected league.
+      if (mounted && _selectedLeague == league) {
+        setState(() {
+          _season = season is num ? season.toInt() : null;
+          _source = source;
+        });
+      }
       final List<dynamic> list = decoded['standings'] ?? [];
       return list.map((e) => StandingTeamModel.fromJson(e)).toList();
     } else {
-      throw Exception('خطأ في السيرفر: ${response.statusCode}');
+      final decoded = jsonDecode(response.body);
+      final detail = decoded is Map ? decoded['detail'] : null;
+      throw Exception(detail ?? 'خطأ في السيرفر: ${response.statusCode}');
     }
   }
 
@@ -104,15 +131,23 @@ class _StandingsScreenState extends State<StandingsScreen> {
     if (_selectedLeague == league) return;
     setState(() {
       _selectedLeague = league;
+      _season = null;
+      _source = null;
       _standingsFuture = _fetchStandings(league);
     });
   }
 
   Future<void> _refresh() async {
     setState(() {
+      _season = null;
+      _source = null;
       _standingsFuture = _fetchStandings(_selectedLeague);
     });
-    await _standingsFuture;
+    try {
+      await _standingsFuture;
+    } catch (_) {
+      // FutureBuilder presents the localized error state.
+    }
   }
 
   Color _getRankIndicatorColor(int rank, int totalTeams) {
@@ -126,20 +161,49 @@ class _StandingsScreenState extends State<StandingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final sourceLabel = dataSourceLabel(
+      _source,
+      isArabic: AppLanguage.instance.isArabic,
+    );
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
-        title: const Text(
-          'جدول ترتيب الدوري',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              AppLanguage.instance.isArabic
+                  ? 'جدول ترتيب الدوري'
+                  : 'League Standings',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            if (_season != null || _source != null)
+              Text(
+                [
+                  if (_season != null)
+                    AppLanguage.instance.isArabic
+                        ? 'موسم $_season/${_season! + 1}'
+                        : 'Season $_season/${_season! + 1}',
+                  ?sourceLabel,
+                ].join(' · '),
+                style: const TextStyle(color: Colors.white54, fontSize: 11),
+              ),
+          ],
         ),
         backgroundColor: const Color(0xFF1E293B),
         elevation: 0,
         actions: [
+          const LanguageMenuButton(),
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.white),
             onPressed: _refresh,
-            tooltip: 'تحديث الترتيب',
+            tooltip: AppLanguage.instance.isArabic
+                ? 'تحديث الترتيب'
+                : 'Refresh standings',
           ),
         ],
       ),
@@ -156,21 +220,22 @@ class _StandingsScreenState extends State<StandingsScreen> {
               itemCount: _leagues.length,
               separatorBuilder: (_, __) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
-                final league = _leagues[index];
-                final isSelected = league == _selectedLeague;
+                final option = _leagues[index];
+                final isSelected = option.code == _selectedLeague;
                 return ChoiceChip(
                   label: Text(
-                    league,
+                    option.label(isArabic: AppLanguage.instance.isArabic),
                     style: TextStyle(
                       color: isSelected ? Colors.black : Colors.white70,
-                      fontWeight:
-                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
                   selected: isSelected,
                   selectedColor: const Color(0xFF38BDF8),
                   backgroundColor: const Color(0xFF334155),
-                  onSelected: (_) => _onLeagueChanged(league),
+                  onSelected: (_) => _onLeagueChanged(option.code),
                 );
               },
             ),
@@ -180,55 +245,82 @@ class _StandingsScreenState extends State<StandingsScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             color: const Color(0xFF1E293B).withValues(alpha: 0.7),
-            child: const Row(
+            child: Row(
               children: [
                 SizedBox(
-                    width: 28,
-                    child: Text('#',
-                        style: TextStyle(
-                            color: Colors.white54,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12))),
+                  width: 28,
+                  child: Text(
+                    '#',
+                    style: TextStyle(
+                      color: Colors.white54,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
                 Expanded(
-                    flex: 4,
-                    child: Text('الفريق',
-                        style: TextStyle(
-                            color: Colors.white54,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12))),
+                  flex: 4,
+                  child: Text(
+                    AppLanguage.instance.isArabic ? 'الفريق' : 'Team',
+                    style: TextStyle(
+                      color: Colors.white54,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
                 SizedBox(
-                    width: 28,
-                    child: Text('لعب',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white54, fontSize: 12))),
+                  width: 28,
+                  child: Text(
+                    AppLanguage.instance.isArabic ? 'لعب' : 'MP',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                  ),
+                ),
                 SizedBox(
-                    width: 28,
-                    child: Text('ف',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white54, fontSize: 12))),
+                  width: 28,
+                  child: Text(
+                    AppLanguage.instance.isArabic ? 'ف' : 'W',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                  ),
+                ),
                 SizedBox(
-                    width: 28,
-                    child: Text('ت',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white54, fontSize: 12))),
+                  width: 28,
+                  child: Text(
+                    AppLanguage.instance.isArabic ? 'ت' : 'D',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                  ),
+                ),
                 SizedBox(
-                    width: 28,
-                    child: Text('خ',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white54, fontSize: 12))),
+                  width: 28,
+                  child: Text(
+                    AppLanguage.instance.isArabic ? 'خ' : 'L',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                  ),
+                ),
                 SizedBox(
-                    width: 34,
-                    child: Text('ف.أ',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white54, fontSize: 12))),
+                  width: 34,
+                  child: Text(
+                    AppLanguage.instance.isArabic ? 'ف.أ' : 'GD',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white54, fontSize: 12),
+                  ),
+                ),
                 SizedBox(
-                    width: 36,
-                    child: Text('نقاط',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: Color(0xFF38BDF8),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12))),
+                  width: 36,
+                  child: Text(
+                    AppLanguage.instance.isArabic ? 'نقاط' : 'PTS',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Color(0xFF38BDF8),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -243,8 +335,9 @@ class _StandingsScreenState extends State<StandingsScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
-                      child:
-                          CircularProgressIndicator(color: Color(0xFF38BDF8)),
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF38BDF8),
+                      ),
                     );
                   }
 
@@ -255,11 +348,14 @@ class _StandingsScreenState extends State<StandingsScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.error_outline,
-                                color: Colors.redAccent, size: 46),
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.redAccent,
+                              size: 46,
+                            ),
                             const SizedBox(height: 10),
                             Text(
-                              'تعذر تحميل الترتيب\n${snapshot.error}',
+                              '${AppLanguage.instance.isArabic ? 'تعذر تحميل الترتيب' : 'Could not load standings'}\n${localizedDataError(snapshot.error!, isArabic: AppLanguage.instance.isArabic, fallback: AppLanguage.instance.isArabic ? 'تحقق من الاتصال بالخادم ثم أعد المحاولة.' : 'Check the backend connection and retry.')}',
                               textAlign: TextAlign.center,
                               style: const TextStyle(color: Colors.white70),
                             ),
@@ -267,7 +363,11 @@ class _StandingsScreenState extends State<StandingsScreen> {
                             ElevatedButton.icon(
                               onPressed: _refresh,
                               icon: const Icon(Icons.refresh),
-                              label: const Text('إعادة المحاولة'),
+                              label: Text(
+                                AppLanguage.instance.isArabic
+                                    ? 'إعادة المحاولة'
+                                    : 'Retry',
+                              ),
                             ),
                           ],
                         ),
@@ -277,10 +377,15 @@ class _StandingsScreenState extends State<StandingsScreen> {
 
                   final teams = snapshot.data ?? [];
                   if (teams.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Text(
-                        'لا توجد بيانات ترتيب مسجلة لهذا الدوري.',
-                        style: TextStyle(color: Colors.white70, fontSize: 15),
+                        AppLanguage.instance.isArabic
+                            ? 'لا توجد بيانات ترتيب متاحة لهذا الدوري حاليًا.'
+                            : 'No standings are currently available for this league.',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 15,
+                        ),
                       ),
                     );
                   }
@@ -291,17 +396,22 @@ class _StandingsScreenState extends State<StandingsScreen> {
                         const Divider(height: 1, color: Colors.white10),
                     itemBuilder: (context, index) {
                       final team = teams[index];
-                      final int displayRank =
-                          team.rank > 0 ? team.rank : (index + 1);
-                      final indicatorColor =
-                          _getRankIndicatorColor(displayRank, teams.length);
+                      final int displayRank = team.rank > 0
+                          ? team.rank
+                          : (index + 1);
+                      final indicatorColor = _getRankIndicatorColor(
+                        displayRank,
+                        teams.length,
+                      );
 
                       return Container(
                         color: index.isEven
                             ? const Color(0xFF0F172A)
                             : const Color(0xFF1E293B).withValues(alpha: 0.35),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 12),
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                         child: Row(
                           children: [
                             // المؤشر اللوني للمركز + الرقم
@@ -351,31 +461,47 @@ class _StandingsScreenState extends State<StandingsScreen> {
                             // الإحصائيات
                             SizedBox(
                               width: 28,
-                              child: Text('${team.played}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: Colors.white70, fontSize: 12.5)),
+                              child: Text(
+                                '${team.played}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12.5,
+                                ),
+                              ),
                             ),
                             SizedBox(
                               width: 28,
-                              child: Text('${team.won}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: Colors.white70, fontSize: 12.5)),
+                              child: Text(
+                                '${team.won}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12.5,
+                                ),
+                              ),
                             ),
                             SizedBox(
                               width: 28,
-                              child: Text('${team.drawn}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: Colors.white70, fontSize: 12.5)),
+                              child: Text(
+                                '${team.drawn}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12.5,
+                                ),
+                              ),
                             ),
                             SizedBox(
                               width: 28,
-                              child: Text('${team.lost}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: Colors.white70, fontSize: 12.5)),
+                              child: Text(
+                                '${team.lost}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12.5,
+                                ),
+                              ),
                             ),
                             SizedBox(
                               width: 34,

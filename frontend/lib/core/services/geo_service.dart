@@ -28,7 +28,7 @@ class CountryInfo {
 }
 
 class GeoService {
-  static const String _accessKey = '995febc8029e43409f2cc90312bcf45e';
+  static const String _accessKey = String.fromEnvironment('APILAYER_KEY');
   static const String _ipstackUrl = 'https://api.apilayer.net/ipstack/check';
   static const String _countryLayerUrl =
       'https://api.apilayer.net/countrylayer/v2/all';

@@ -1,0 +1,6 @@
+cd D:\football-tactics-app\backend
+py -m uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+docker compose up --build
+cd D:\football-tactics-app\backend
+D:\football-tactics-app\.venv_mcp\Scripts\python.exe -m pip install -r requirements-scrapers.txt
+D:\football-tactics-app\.venv_mcp\Scripts\python.exe -m scripts.scrape_understat
