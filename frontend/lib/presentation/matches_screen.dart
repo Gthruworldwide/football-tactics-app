@@ -239,7 +239,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
                       if (_navIndex == 0) _fetchMatches();
                     },
                     backgroundColor: AppTheme.surfaceCard,
-                    selectedColor: AppTheme.accentEmerald.withOpacity(0.18),
+                    selectedColor: AppTheme.accentEmerald.withValues(alpha: 0.18),
                     side: BorderSide(
                       color: isSelected
                           ? AppTheme.accentEmerald
@@ -280,7 +280,7 @@ class _MatchesScreenState extends State<MatchesScreen> {
       bottomNavigationBar: NavigationBar(
         height: 64,
         backgroundColor: AppTheme.surfaceCard,
-        indicatorColor: AppTheme.accentEmerald.withOpacity(0.18),
+        indicatorColor: AppTheme.accentEmerald.withValues(alpha: 0.18),
         selectedIndex: _navIndex,
         onDestinationSelected: (idx) {
           HapticFeedback.selectionClick();

@@ -32,7 +32,7 @@ class _LeagueFilterChipsState extends State<LeagueFilterChips> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 2,
               spreadRadius: 1,
               offset: const Offset(0, 2),
@@ -133,7 +133,7 @@ class _CountryFilterChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           onSelected: (_) => onSelected(country),
-          disabledColor: colors.outline.withOpacity(0.3),
+          disabledColor: colors.outline.withValues(alpha: 0.3),
         ),
       ),
     );

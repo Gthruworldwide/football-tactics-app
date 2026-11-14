@@ -97,7 +97,7 @@ class _DateBarState extends State<DateBar> with TickerProviderStateMixin {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 2,
             spreadRadius: 1,
             offset: const Offset(0, 2),
@@ -126,7 +126,7 @@ class _DateBarState extends State<DateBar> with TickerProviderStateMixin {
               controller: _tabController,
               labelColor: _theme?.colorScheme.onPrimaryContainer ?? Colors.white,
               unselectedLabelColor:
-                  _theme?.colorScheme.onPrimaryContainer?.withOpacity(0.6) ?? Colors.white,
+                  _theme?.colorScheme.onPrimaryContainer?.withValues(alpha: 0.6) ?? Colors.white,
               indicator: BoxDecoration(
                 color: _theme?.colorScheme.primary ?? Colors.blue,
                 borderRadius: BorderRadius.circular(20),
@@ -200,7 +200,7 @@ class _DateBarState extends State<DateBar> with TickerProviderStateMixin {
       child: Text(
         DateFormat('EEE d MMM').format(date),
         style: _theme?.textTheme.bodySmall?.copyWith(
-          color: isSelected ? Colors.white : _theme?.colorScheme.onPrimaryContainer?.withOpacity(0.8),
+          color: isSelected ? Colors.white : _theme?.colorScheme.onPrimaryContainer?.withValues(alpha: 0.8),
           fontWeight: FontWeight.w600,
           fontSize: 11,
         ),

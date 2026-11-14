@@ -179,7 +179,7 @@ class _StandingsScreenState extends State<StandingsScreen> {
           // ترويسة الأعمدة
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            color: const Color(0xFF1E293B).withOpacity(0.7),
+            color: const Color(0xFF1E293B).withValues(alpha: 0.7),
             child: const Row(
               children: [
                 SizedBox(
@@ -299,7 +299,7 @@ class _StandingsScreenState extends State<StandingsScreen> {
                       return Container(
                         color: index.isEven
                             ? const Color(0xFF0F172A)
-                            : const Color(0xFF1E293B).withOpacity(0.35),
+                            : const Color(0xFF1E293B).withValues(alpha: 0.35),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 12),
                         child: Row(
@@ -446,7 +446,7 @@ class _FormBadges extends StatelessWidget {
           height: 14,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: bg.withOpacity(0.25),
+            color: bg.withValues(alpha: 0.25),
             borderRadius: BorderRadius.circular(3),
             border: Border.all(color: bg, width: 0.8),
           ),

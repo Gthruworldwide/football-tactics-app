@@ -75,7 +75,7 @@ class SoaScoreNavBar extends StatelessWidget {
         color: theme.colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.1),
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -90,7 +90,7 @@ class SoaScoreNavBar extends StatelessWidget {
           backgroundColor: theme.colorScheme.surface,
           elevation: 0,
           selectedItemColor: theme.colorScheme.primary,
-          unselectedItemColor: theme.colorScheme.onSurface.withOpacity(0.5),
+          unselectedItemColor: theme.colorScheme.onSurface.withValues(alpha: 0.5),
           selectedFontSize: 11,
           unselectedFontSize: 11,
           showSelectedLabels: true,

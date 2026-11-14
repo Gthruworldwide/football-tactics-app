@@ -88,7 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundColor: AppTheme.accentEmerald.withOpacity(0.18),
+                  backgroundColor: AppTheme.accentEmerald.withValues(alpha: 0.18),
                   child: Text(
                     _userName.substring(0, 1).toUpperCase(),
                     style: const TextStyle(
@@ -158,7 +158,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               return FilterChip(
                 label: Text('${c.name} (${c.alpha2Code})'),
                 selected: active,
-                selectedColor: AppTheme.accentEmerald.withOpacity(0.2),
+                selectedColor: AppTheme.accentEmerald.withValues(alpha: 0.2),
                 checkmarkColor: AppTheme.accentEmerald,
                 labelStyle: TextStyle(
                   color: active ? AppTheme.accentEmerald : AppTheme.textSecondary,

@@ -74,7 +74,7 @@ class _WorkspaceCustomizerSheetState extends State<WorkspaceCustomizerSheet> {
               return FilterChip(
                 label: Text(entry.value),
                 selected: active,
-                selectedColor: AppTheme.accentEmerald.withOpacity(0.2),
+                selectedColor: AppTheme.accentEmerald.withValues(alpha: 0.2),
                 checkmarkColor: AppTheme.accentEmerald,
                 labelStyle: TextStyle(
                   color: active ? AppTheme.accentEmerald : AppTheme.textSecondary,
@@ -102,7 +102,7 @@ class _WorkspaceCustomizerSheetState extends State<WorkspaceCustomizerSheet> {
               return ChoiceChip(
                 label: Text(lens),
                 selected: active,
-                selectedColor: AppTheme.accentCyan.withOpacity(0.2),
+                selectedColor: AppTheme.accentCyan.withValues(alpha: 0.2),
                 labelStyle: TextStyle(
                   color: active ? AppTheme.accentCyan : AppTheme.textSecondary,
                   fontSize: 12,

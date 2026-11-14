@@ -138,7 +138,7 @@ class _PlayerStatsScreenState extends State<PlayerStatsScreen> {
             decoration: BoxDecoration(
               color: AppTheme.surfaceCard,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: ratingColor.withOpacity(0.45)),
+              border: Border.all(color: ratingColor.withValues(alpha: 0.45)),
             ),
             child: Row(
               children: [
@@ -159,7 +159,7 @@ class _PlayerStatsScreenState extends State<PlayerStatsScreen> {
                       decoration: BoxDecoration(
                         color: AppTheme.surfaceElevated,
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: ratingColor.withOpacity(0.5)),
+                        border: Border.all(color: ratingColor.withValues(alpha: 0.5)),
                       ),
                       child: photoUrl != null && photoUrl.isNotEmpty
                           ? Image.network(
@@ -232,7 +232,7 @@ class _PlayerStatsScreenState extends State<PlayerStatsScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: ratingColor.withOpacity(0.15),
+                    color: ratingColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: ratingColor, width: 1.2),
                   ),
@@ -331,15 +331,15 @@ class _PlayerStatsScreenState extends State<PlayerStatsScreen> {
                           RadarChartTitle(text: titles[index]),
                       dataSets: [
                         RadarDataSet(
-                          fillColor: AppTheme.accentEmerald.withOpacity(0.22),
+                          fillColor: AppTheme.accentEmerald.withValues(alpha: 0.22),
                           borderColor: AppTheme.accentEmerald,
                           borderWidth: 2.5,
                           entryRadius: 4,
                           dataEntries: _buildRadarEntries(p),
                         ),
                         RadarDataSet(
-                          fillColor: AppTheme.accentCyan.withOpacity(0.08),
-                          borderColor: AppTheme.accentCyan.withOpacity(0.7),
+                          fillColor: AppTheme.accentCyan.withValues(alpha: 0.08),
+                          borderColor: AppTheme.accentCyan.withValues(alpha: 0.7),
                           borderWidth: 1.5,
                           entryRadius: 0,
                           dataEntries: [

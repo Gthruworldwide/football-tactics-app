@@ -74,7 +74,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: AppTheme.accentEmerald.withOpacity(0.15),
+                  color: AppTheme.accentEmerald.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppTheme.accentEmerald),
                 ),
@@ -141,7 +141,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   return ChoiceChip(
                     label: Text(role),
                     selected: active,
-                    selectedColor: AppTheme.accentEmerald.withOpacity(0.2),
+                    selectedColor: AppTheme.accentEmerald.withValues(alpha: 0.2),
                     labelStyle: TextStyle(
                       color: active
                           ? AppTheme.accentEmerald

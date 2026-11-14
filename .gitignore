@@ -12,7 +12,6 @@ frontend/build/
 frontend/.dart_tool/
 frontend/.flutter-plugins
 frontend/.flutter-plugins-dependencies
-frontend/pubspec.lock
 
 # Backend
 backend/__pycache__/

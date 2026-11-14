@@ -222,11 +222,6 @@ class MatchSelected extends TacticalEvent {
   });
 }
 
-class GenerateAISummary extends TacticalEvent {
-  final String matchId;
-  GenerateAISummary({required this.matchId});
-}
-
 class PPDAUpdate extends TacticalEvent {
   final String matchId;
   final int homePPDA;
