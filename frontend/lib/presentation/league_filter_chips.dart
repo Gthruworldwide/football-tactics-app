@@ -98,7 +98,7 @@ class _LeagueFilterChipsState extends State<LeagueFilterChips> {
                         height: 4,
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.outline
-                              .withOpacity(0.5),
+                              .withValues(alpha: 0.5),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -186,7 +186,7 @@ class _LeagueFilterChipsState extends State<LeagueFilterChips> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 2,
               spreadRadius: 1,
               offset: const Offset(0, 2),
@@ -259,8 +259,8 @@ class _LeagueFilterChipsState extends State<LeagueFilterChips> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            backgroundColor: theme.colorScheme.primaryContainer.withOpacity(
-              0.3,
+            backgroundColor: theme.colorScheme.primaryContainer.withValues(
+              alpha: 0.3,
             ),
           ),
         ),
@@ -315,7 +315,7 @@ class _CountryFilterChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           onSelected: (_) => onSelected(country),
-          disabledColor: colors.outline.withOpacity(0.3),
+          disabledColor: colors.outline.withValues(alpha: 0.3),
         ),
       ),
     );

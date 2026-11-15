@@ -55,15 +55,15 @@ class TacticalMatchCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isTracked
-              ? AppTheme.accentEmerald.withOpacity(0.06)
+              ? AppTheme.accentEmerald.withValues(alpha: 0.06)
               : AppTheme.surfaceCard,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: isLive
-                ? AppTheme.accentEmerald.withOpacity(0.55)
+                ? AppTheme.accentEmerald.withValues(alpha: 0.55)
                 : (isTracked
-                      ? AppTheme.accentCyan.withOpacity(0.45)
-                      : AppTheme.borderSubtle),
+                    ? AppTheme.accentCyan.withValues(alpha: 0.45)
+                    : AppTheme.borderSubtle),
             width: 1,
           ),
         ),
@@ -234,7 +234,7 @@ class TacticalMatchCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.surfaceElevated.withOpacity(0.7),
+                  color: AppTheme.surfaceElevated.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: FutureBuilder<StadiumWeather?>(
@@ -310,7 +310,7 @@ class TacticalMatchCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: isLive
-            ? AppTheme.accentEmerald.withOpacity(0.15)
+            ? AppTheme.accentEmerald.withValues(alpha: 0.15)
             : AppTheme.surfaceElevated,
         borderRadius: BorderRadius.circular(6),
       ),
@@ -353,9 +353,9 @@ class TacticalMatchCard extends StatelessWidget {
           height: 30,
           padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(
-            color: accent.withOpacity(0.10),
+            color: accent.withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: accent.withOpacity(0.35)),
+            border: Border.all(color: accent.withValues(alpha: 0.35)),
           ),
           child: badgeUrl != null && badgeUrl.isNotEmpty
               ? Image.network(

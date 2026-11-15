@@ -79,7 +79,7 @@ class _MatchCardState extends State<MatchCard>
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 8,
                     spreadRadius: 1,
                     offset: const Offset(0, 2),
@@ -144,14 +144,14 @@ class _MatchCardState extends State<MatchCard>
                                     width: 12,
                                     height: 12,
                                     decoration: BoxDecoration(
-                                      color: Colors.red.withOpacity(
-                                        _pulseController.value * 0.5 + 0.3,
+                                      color: Colors.red.withValues(
+                                        alpha: _pulseController.value * 0.5 + 0.3,
                                       ),
                                       borderRadius: BorderRadius.circular(6),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.red.withOpacity(
-                                            _pulseController.value * 0.3,
+                                          color: Colors.red.withValues(
+                                            alpha: _pulseController.value * 0.3,
                                           ),
                                           blurRadius: 6,
                                           spreadRadius: 2,
@@ -175,7 +175,7 @@ class _MatchCardState extends State<MatchCard>
                             Text(
                               '${widget.match.minute}\'',
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                                 fontSize: 11,
                               ),
                             ),
@@ -228,7 +228,7 @@ class _MatchCardState extends State<MatchCard>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceVariant,
+                      color: theme.colorScheme.surfaceContainerHighest,
                       borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(16),
                         bottomRight: Radius.circular(16),
@@ -268,7 +268,7 @@ class _MatchCardState extends State<MatchCard>
                                 child: Text(
                                   widget.match.commentator,
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                                     fontSize: 10,
                                     fontStyle: FontStyle.italic,
                                   ),

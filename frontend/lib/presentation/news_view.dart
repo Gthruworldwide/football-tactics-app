@@ -60,7 +60,7 @@ class _NewsViewState extends State<NewsView> {
               return ChoiceChip(
                 label: Text(tag),
                 selected: active,
-                selectedColor: AppTheme.accentCyan.withOpacity(0.18),
+                selectedColor: AppTheme.accentCyan.withValues(alpha: 0.18),
                 backgroundColor: AppTheme.surfaceCard,
                 side: BorderSide(
                   color: active ? AppTheme.accentCyan : AppTheme.borderSubtle,

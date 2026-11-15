@@ -416,7 +416,7 @@ class _PlayerTacticalCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 14,
-                  backgroundColor: const Color(0xFF38BDF8).withOpacity(0.18),
+                  backgroundColor: const Color(0xFF38BDF8).withValues(alpha: 0.18),
                   child: Text(
                     '$rank',
                     style: const TextStyle(
