@@ -1,16 +1,24 @@
 """Public API v1: matches, standings, geo, AI summary."""
 
+from urllib.parse import urlencode, urlsplit, urlunsplit
+
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from app.api.schemas import MatchesResponse, StandingsResponse
 from app.core.config import settings
+from app.core.database import db
 from app.core.redis_client import cache_get, cache_set
 from app.services.ai_summary import AITacticalSummary
-from app.services.api_football import APIFootballError, APIFootballService
+from app.services.api_football import APIFootballError, APIFootballService, LEAGUE_IDS
 from app.services.football_data import FootballDataError, FootballDataService
 from app.services.highlightly import HighlightlyError, HighlightlyService
 from app.services.geolocation import detect_country
+from app.services.knowledge_graph import (
+    persist_matches,
+    persist_scorers,
+    persist_standings,
+)
 from app.services.tactical_metrics import attach_tactical_metrics
 
 router = APIRouter(prefix="/api/v1")
@@ -27,6 +35,51 @@ def _football_provider() -> str:
     if settings.HIGHLIGHTLY_API_KEY:
         return "highlightly"
     return "api-football"
+
+
+def _provider_source_uri(
+    provider: str, record_type: str, country_code: str, season: int
+) -> str:
+    if provider == "football-data":
+        competition = FootballDataService.competition_code(country_code)
+        endpoint = {
+            "match": "matches",
+            "standing": "standings",
+            "player_statistics": "scorers",
+        }[record_type]
+        return _public_source_uri(
+            settings.FOOTBALL_DATA_BASE_URL,
+            f"competitions/{competition}/{endpoint}",
+            {"season": season},
+        )
+    if provider == "api-football":
+        league_id = LEAGUE_IDS[country_code.upper().replace(" ", "")]
+        endpoint = {
+            "match": "fixtures",
+            "standing": "standings",
+            "player_statistics": "players/topscorers",
+        }[record_type]
+        return _public_source_uri(
+            settings.API_FOOTBALL_BASE_URL,
+            endpoint,
+            {"league": league_id, "season": season},
+        )
+    endpoint = "matches" if record_type == "match" else "standings"
+    return _public_source_uri(settings.HIGHLIGHTLY_BASE_URL, endpoint)
+
+
+def _public_source_uri(
+    base_url: str, endpoint: str, query: dict[str, int] | None = None
+) -> str:
+    parsed = urlsplit(base_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+        raise ValueError("Provider base URL must be an absolute HTTP(S) URL.")
+    hostname = parsed.hostname
+    netloc = f"[{hostname}]" if ":" in hostname else hostname
+    if parsed.port is not None:
+        netloc = f"{netloc}:{parsed.port}"
+    path = f"{parsed.path.rstrip('/')}/{endpoint.lstrip('/')}"
+    return urlunsplit((parsed.scheme, netloc, path, urlencode(query or {}), ""))
 
 
 async def _load_matches(cc: str, season: int, preferred: str):
@@ -126,6 +179,14 @@ async def get_matches(country_code: str):
         "source": provider,
         "matches": attach_tactical_metrics(matches),
     }
+    with db() as conn:
+        persist_matches(
+            conn,
+            data["matches"],
+            provider,
+            season,
+            _provider_source_uri(provider, "match", cc, season),
+        )
     # Use source-specific refresh windows so rapid tab changes do not exhaust
     # a provider's quota. football-data's free scores are delayed; Highlightly
     # advertises one-minute match refreshes.
@@ -158,6 +219,15 @@ async def get_standings(country_code: str):
         "source": provider,
         "standings": table,
     }
+    with db() as conn:
+        persist_standings(
+            conn,
+            table,
+            provider,
+            season,
+            cc,
+            _provider_source_uri(provider, "standing", cc, season),
+        )
     cache_set(key, data, 3600)  # refresh at least hourly during active rounds
     return JSONResponse(data, headers={"X-Cached": "false"})
 
@@ -182,6 +252,15 @@ async def get_top_scorers(country_code: str):
                     "source": provider,
                     "players": players,
                 }
+                with db() as conn:
+                    persist_scorers(
+                        conn,
+                        players,
+                        provider,
+                        season,
+                        cc,
+                        _provider_source_uri(provider, "player_statistics", cc, season),
+                    )
                 cache_set(key, data, 3600)
                 return JSONResponse(data, headers={"X-Cached": "false"})
             except FootballDataError:
@@ -223,6 +302,7 @@ async def get_top_scorers(country_code: str):
         players.append({
             "id": player.get("id"),
             "player_name": player.get("name"),
+            "team_id": team.get("id"),
             "team_name": team.get("name"),
             "league": league.get("name"),
             "position": games.get("position"),
@@ -243,6 +323,15 @@ async def get_top_scorers(country_code: str):
         "source": provider,
         "players": players,
     }
+    with db() as conn:
+        persist_scorers(
+            conn,
+            players,
+            provider,
+            season,
+            cc,
+            _provider_source_uri(provider, "player_statistics", cc, season),
+        )
     cache_set(key, data, 3600)
     cache_set(f"players:{provider}:{cc}:{season}", data, 3600)
     return JSONResponse(data, headers={"X-Cached": "false"})
