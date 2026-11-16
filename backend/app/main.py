@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import sync, tactics, v1
+from app.api import knowledge, sync, tactics, v1
 from app.core.config import settings
 from app.core.database import init_db
 
@@ -33,6 +33,7 @@ app.add_middleware(
 )
 
 app.include_router(v1.router)
+app.include_router(knowledge.router)
 app.include_router(tactics.router)
 app.include_router(sync.router)
 

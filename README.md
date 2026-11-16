@@ -1,16 +1,26 @@
-# Football Tactics Analytics Engine
+# Wasl (وصل) — Independent Connected Knowledge App
 
 ## Overview
 
-A minimalist Single Page Application (SPA) for football analysts, commentators, and tacticians. Built with a strict no-news policy and focused solely on tactical analytics.
+Wasl is a clean, standalone Flutter mobile app for building a source-backed knowledge graph about any topic. It lives in `wasl/`, has its own Android application ID (`com.gthruworldwide.wasl_app`), and starts with an empty on-device store. It does not import data, screens, services, or dependencies from the existing football app in `frontend/`.
 
 ## Core Features
 
-- **5-Country Geographic Filter**: England (Premier League), Spain (La Liga), Italy (Serie A) + auto-detected Geo-IP country + user-selectable country
-- **Live Match Data**: Live scores, live minute, channel name, commentator name
-- **Tactical Analytics**: xG, xA, PPDA, Field Tilt, Momentum graphs
-- **AI Commentator Summaries**: Generated via Langflow + Ollama MCP
-- **Minimalist UI**: Horizontal date bar + calendar picker, league filter chips, match cards
+- **General-purpose entities**: Add people, organizations, websites, places, events, and any other entity type.
+- **Cited facts and connections**: Each entry requires an HTTP(S) source URL; valid-time ranges are optional and separate from retrieval time.
+- **Safe identity handling**: Each entity gets a unique local ID. Matching names never merge records.
+- **Private by default**: Wasl uses its own app storage and has no backend connection, account sync, or imported football data.
+
+## Wasl mobile app
+
+All Wasl records are entered by the user and stored locally on the device. Source URLs are user-supplied and are not independently verified. Local preferences are not encrypted by Wasl and do not sync across devices. AI explanations are deferred; displayed facts and relationships show their sources.
+
+```powershell
+cd wasl
+flutter run
+flutter test
+flutter build apk --release
+```
 
 ## Technology Stack
 
@@ -23,10 +33,9 @@ A minimalist Single Page Application (SPA) for football analysts, commentators, 
 - **Caching**: Redis (TTL: 15s live, 24h static)
 - **AI Architecture**: Langflow + Ollama MCP
 
-### Frontend
-- **Framework**: Flutter (Web/Mobile SPA) with RTL support
-- **State Management**: Flutter BLoC Pattern
-- **Local Storage**: Hive / Hydrated BLoC
+### Apps
+- **Wasl (`wasl/`)**: Independent Flutter Android/iOS app; generic knowledge graph and local-only storage.
+- **Existing football app (`frontend/`)**: Separate legacy Flutter app with its own screens, dependencies, and backend integrations.
 
 ## Project Structure
 
@@ -44,6 +53,7 @@ football-tactics-app/
 │   ├── Dockerfile
 │   └── requirements*.txt
 ├── frontend/               ← Flutter app (BLoC)
+├── wasl/                   ← Independent general-knowledge Flutter app
 ├── mcp_server/             ← AI summary MCP server (own Dockerfile)
 ├── docker-compose.yml
 └── .env.example

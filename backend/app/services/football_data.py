@@ -278,6 +278,7 @@ class FootballDataService:
             players.append({
                 "id": player.get("id"),
                 "player_name": player.get("name"),
+                "team_id": team.get("id"),
                 "team_name": team.get("name"),
                 "league": country_code,
                 "position": player.get("position"),

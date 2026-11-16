@@ -127,6 +127,70 @@ SCHEMA = [
         expires_at TEXT
     )
     """,
+    """
+    CREATE TABLE IF NOT EXISTS knowledge_entities (
+        id TEXT PRIMARY KEY,
+        entity_type TEXT NOT NULL,
+        name TEXT NOT NULL,
+        attributes_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS knowledge_identities (
+        entity_id TEXT NOT NULL REFERENCES knowledge_entities(id),
+        source TEXT NOT NULL,
+        external_id TEXT NOT NULL,
+        entity_type TEXT NOT NULL,
+        PRIMARY KEY (source, entity_type, external_id),
+        UNIQUE (entity_id, source)
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS knowledge_sources (
+        id TEXT PRIMARY KEY,
+        provider TEXT NOT NULL,
+        record_type TEXT NOT NULL,
+        record_id TEXT NOT NULL,
+        source_uri TEXT NOT NULL,
+        retrieved_at TEXT NOT NULL,
+        season INTEGER
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS knowledge_facts (
+        id TEXT PRIMARY KEY,
+        entity_id TEXT NOT NULL REFERENCES knowledge_entities(id),
+        predicate TEXT NOT NULL,
+        value_json TEXT NOT NULL,
+        valid_from TEXT,
+        valid_to TEXT,
+        source_id TEXT NOT NULL REFERENCES knowledge_sources(id),
+        attributes_json TEXT NOT NULL DEFAULT '{}'
+    )
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS knowledge_relationships (
+        id TEXT PRIMARY KEY,
+        subject_id TEXT NOT NULL REFERENCES knowledge_entities(id),
+        predicate TEXT NOT NULL,
+        object_id TEXT NOT NULL REFERENCES knowledge_entities(id),
+        valid_from TEXT,
+        valid_to TEXT,
+        source_id TEXT NOT NULL REFERENCES knowledge_sources(id),
+        attributes_json TEXT NOT NULL DEFAULT '{}',
+        UNIQUE (subject_id, predicate, object_id, source_id)
+    )
+    """,
+    "CREATE INDEX IF NOT EXISTS idx_knowledge_entities_name "
+    "ON knowledge_entities(name COLLATE NOCASE)",
+    "CREATE INDEX IF NOT EXISTS idx_knowledge_facts_entity "
+    "ON knowledge_facts(entity_id, predicate)",
+    "CREATE INDEX IF NOT EXISTS idx_knowledge_relationships_subject "
+    "ON knowledge_relationships(subject_id, predicate)",
+    "CREATE INDEX IF NOT EXISTS idx_knowledge_relationships_object "
+    "ON knowledge_relationships(object_id, predicate)",
     "CREATE INDEX IF NOT EXISTS idx_match_xg_teams_date "
     "ON match_xg(home_team, away_team, match_date DESC)",
     "CREATE INDEX IF NOT EXISTS idx_match_xg_league_date "
